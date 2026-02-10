@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+/jspm_packages
+
+# Build artifacts
+# The 'dist' directory is a common output location. Adjust based on your tsconfig.json 'outDir'.
+/dist
+/build
+*.js.map
+*.d.ts
+*.tgz
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Optional npm cache
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# IDE and OS files
+.vscode/         # VS Code directory (optional, can be useful to share some config)
+.idea/           # IntelliJ/WebStorm
+.cache/          # Parcel, Gatsby, etc.
+.DS_Store        # macOS
+npm-debug.log*   # npm debug logs
+yarn-debug.log*  # Yarn debug logs
+yarn-error.log*
+# Yarn v3
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
