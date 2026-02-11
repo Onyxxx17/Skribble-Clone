@@ -3,15 +3,6 @@ export interface User {
   username: string;
 }
 
-export interface Room {
-  id: string;      
-  code: string;      
-  users: User[];
-  drawerIndex: number;
-  word?: string;
-  messages: ChatMessage[];
-}
-
 export interface ChatMessage {
   id: string;
   user: User;
@@ -22,3 +13,8 @@ export interface Guess {
   user: User;
   isCorrectGuess?: boolean;
 }
+
+// Combined type for displaying in the UI
+export type DisplayMessage = 
+  | { type: 'message'; data: ChatMessage }
+  | { type: 'guess'; data: Guess };

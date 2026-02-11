@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import './App.css'
-
-const socket = io('http://localhost:3001', {
-  autoConnect: false
-});
-
+import socket from './socket';
+import Chat from './components/Chat';
 function App() {
   const [roomCode, setRoomCode] = useState("");
   const [username, setUsername] = useState("");
@@ -89,28 +85,37 @@ function App() {
 
   if (inRoom) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-          <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">Room Created!</h1>
-          <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6 mb-6">
-            <p className="text-gray-700 text-sm mb-2">Room Code:</p>
-            <p className="text-4xl font-bold text-center text-blue-600 tracking-widest">{roomCode}</p>
+      <div className="min-h-screen bg-gray-100 flex flex-col p-4">
+        {/* Top Section - Room Info */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-blue-600 mb-2">Room: {roomCode}</h1>
+              <p className="text-gray-600 text-sm">Share this code with others to join!</p>
+            </div>
+            <button
+              onClick={leaveRoom}
+              className="bg-red-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-600 transition duration-200"
+            >
+              Leave Room
+            </button>
           </div>
-          <div className="mb-4">
-            <p className="text-gray-700 font-semibold mb-2">Players in room:</p>
-            <ul className="space-y-2">
+          
+          <div className="mt-4 bg-gray-50 rounded-lg p-4">
+            <p className="text-gray-700 font-semibold mb-2">Players ({users.length}):</p>
+            <div className="flex flex-wrap gap-2">
               {users.map((user, index) => (
-                <li key={index} className="bg-gray-50 px-4 py-2 rounded">{user}</li>
+                <span key={index} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                  👤 {user}
+                </span>
               ))}
-            </ul>
+            </div>
           </div>
-          <p className="text-center text-gray-600 text-sm mb-4">Share this code with others to join!</p>
-          <button
-            onClick={leaveRoom}
-            className="w-full bg-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-600 transition duration-200"
-          >
-            Leave Room
-          </button>
+        </div>
+
+        {/* Bottom Section - Chat */}
+        <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
+          <Chat roomId={roomCode} username={username} />
         </div>
       </div>
     );

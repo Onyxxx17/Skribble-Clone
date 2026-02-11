@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { createRoom, joinRoom, removeUserFromRoom } from "./rooms";
+import { createRoom, getRoomByCode, joinRoom, removeUserFromRoom } from "./rooms";
 import { Room } from "./types";
-import { createMessage } from "./messages";
+import { addMessageToRoom, createGuess, createMessage } from "./messages";
 
 const app = express();
 const server = createServer(app);
@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
   
   socket.on('create_room', ({username})=>{
     const room : Room = createRoom(username,socket.id);
+    room.word = "WORD";
     socket.join(room.code);
     socket.emit('room_created', {
       room,  
@@ -58,9 +59,37 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on("send_message", ({ message, username, roomCode }) => {
-    const chatMessage = createMessage(message, username, roomCode);
-    io.to(roomCode).emit("message_sent", chatMessage);
+  socket.on("send_message", ({  username, roomCode, message}) => {
+    
+    let chatMessage;
+    try {
+       chatMessage = createMessage(socket.id, roomCode, message);
+    } catch (error) {
+      socket.emit("error", error);
+      console.log(error);
+      return;
+    }
+    
+    const room = getRoomByCode(roomCode);
+    if (!room) return;
+
+    addMessageToRoom(room, chatMessage);
+
+    let guess;
+    try {
+      guess = createGuess(socket.id, roomCode, message);
+      io.to(roomCode).emit("guess", guess);
+    } catch (error) {
+      socket.emit("error", error);
+    }
+
+    if(guess?.isCorrectGuess){
+      // Only sender sees their correct guess
+      socket.emit("message_sent", chatMessage);
+    } else{
+      // Everyone sees incorrect guesses
+      io.to(roomCode).emit("message_sent", chatMessage);
+    }
   })
 
   socket.on('disconnect', () => {

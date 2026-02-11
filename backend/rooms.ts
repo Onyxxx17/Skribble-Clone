@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Room } from "./types";
+import { Room, User } from "./types";
 const rooms: Record<string, Room> = {};
 
 function generateRoomCode(length = 5): string {
@@ -19,6 +19,7 @@ export function createRoom(username: string, socketId: string): Room {
     code,
     users: [{ id: socketId, username }],
     drawerIndex: 0,
+    messages: [],
   };
 
   rooms[room.id] = room;
@@ -41,17 +42,7 @@ export function removeUserFromRoom(
   socketId: string,
   roomCode?: string
 ): { room: Room; username: string } | null {
-  let room: Room | null = null;
-  
-  if (roomCode) {
-    room = getRoomByCode(roomCode);
-  } else {
-    // Search all rooms for the socket
-    room = Object.values(rooms).find(r => 
-      r.users.some(u => u.id === socketId)
-    ) || null;
-  }
-  
+  const room = getRoomByCode(roomCode || "");
   if (!room) return null;
   
   const user = room.users.find(u => u.id === socketId);
@@ -69,4 +60,15 @@ export function removeUserFromRoom(
 
 export function getRoomByCode(code: string): Room | null {
   return Object.values(rooms).find(r => r.code === code) || null;
+}
+
+export function findUserBySocketIdAndRoom(socketId: string, roomCode?: string): User | null {
+  const room = getRoomByCode(roomCode || "");
+  console.log(room);
+  if (!room) return null;
+
+  const user = room.users.find(u => u.id === socketId);
+  console.log(user);
+
+  return user || null;
 }
