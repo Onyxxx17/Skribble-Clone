@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { createRoom, getRoomByCode, joinRoom, removeUserFromRoom } from "./rooms";
+import { createRoom, getRoomByCode, joinRoom, removeUserFromRoom, findUserBySocketIdAndRoom } from "./rooms";
 import { Room } from "./types";
 import { addMessageToRoom, createGuess, createMessage } from "./messages";
 
@@ -75,19 +75,26 @@ io.on('connection', (socket) => {
 
     addMessageToRoom(room, chatMessage);
 
+    const user = findUserBySocketIdAndRoom(socket.id, roomCode);
+    if(!user) return;
     let guess;
     try {
       guess = createGuess(socket.id, roomCode, message);
-      io.to(roomCode).emit("guess", guess);
+      
+      // If correct guess, mark user as guessed and notify everyone
+      if (guess.isCorrectGuess && !user.correctlyGuessed) {
+        user.correctlyGuessed = true;
+        io.to(roomCode).emit("guess", guess);
+      }
     } catch (error) {
       socket.emit("error", error);
     }
 
-    if(guess?.isCorrectGuess){
-      // Only sender sees their correct guess
+    // Only the current message: if it's a correct guess or user already guessed, only sender sees it
+    if(guess?.isCorrectGuess || user.correctlyGuessed){
       socket.emit("message_sent", chatMessage);
     } else{
-      // Everyone sees incorrect guesses
+      // Everyone sees incorrect guesses and regular messages
       io.to(roomCode).emit("message_sent", chatMessage);
     }
   })

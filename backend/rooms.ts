@@ -72,3 +72,6 @@ export function findUserBySocketIdAndRoom(socketId: string, roomCode?: string): 
 
   return user || null;
 }
+export function findUserInRoom(room: Room, socketId: string): User | null {
+  return room.users.find(u => u.id === socketId) || null;
+}
