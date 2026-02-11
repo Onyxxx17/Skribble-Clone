@@ -27,5 +27,5 @@ function generateMessageId(): string {
 }
 
 function checkCorrectGuess(word: string, guess: string): boolean {
-    return word === guess;
+    return word.toUpperCase() === guess.trim().toUpperCase();
 }

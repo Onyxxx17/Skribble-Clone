@@ -2,13 +2,9 @@ import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import { createRoom, joinRoom, removeUserFromRoom } from "./rooms";
 import { Room } from "./types";
 import { createMessage } from "./messages";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const server = createServer(app);
@@ -64,7 +60,7 @@ io.on('connection', (socket) => {
 
   socket.on("send_message", ({ message, username, roomCode }) => {
     const chatMessage = createMessage(message, username, roomCode);
-    socket.to(roomCode).emit("message_sent", chatMessage);
+    io.to(roomCode).emit("message_sent", chatMessage);
   })
 
   socket.on('disconnect', () => {
