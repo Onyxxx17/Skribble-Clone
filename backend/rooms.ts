@@ -1,18 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-
-export interface User {
-  id: string;
-  username: string;
-}
-
-export interface Room {
-  id: string;      
-  code: string;      
-  users: User[];
-  drawerIndex: number;
-  word?: string;
-}
-
+import { Room } from "./types";
 const rooms: Record<string, Room> = {};
 
 function generateRoomCode(length = 5): string {

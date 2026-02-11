@@ -33,7 +33,6 @@ function App() {
     console.log("Room Joined:", room);
     setRoomCode(room.code);
     setInRoom(true);
-    setUsers([]);
     setUsers(room.users);
     });
 

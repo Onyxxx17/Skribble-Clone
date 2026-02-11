@@ -4,7 +4,9 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { createRoom, joinRoom, removeUserFromRoom, Room } from "./rooms";
+import { createRoom, joinRoom, removeUserFromRoom } from "./rooms";
+import { Room } from "./types";
+import { createMessage } from "./messages";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -22,10 +24,6 @@ app.use(cors());
 app.get('/', (_req, res) => {
   res.send('Hello world');
 });
-
-// app.get("/", (req, res) => {
-//     res.send("Hello world");
-// });
 
 //Socket.io connection
 io.on('connection', (socket) => {
@@ -63,6 +61,11 @@ io.on('connection', (socket) => {
       socket.to(result.room.code).emit("user_left", result.username);
     }
   });
+
+  socket.on("send_message", ({ message, username, roomCode }) => {
+    const chatMessage = createMessage(message, username, roomCode);
+    socket.to(roomCode).emit("message_sent", chatMessage);
+  })
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
