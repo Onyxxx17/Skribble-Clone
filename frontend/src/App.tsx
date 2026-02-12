@@ -112,7 +112,7 @@ function App() {
             </div>
           </div>
         </div>
-
+      
         {/* Bottom Section - Chat */}
         <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
           <Chat roomId={roomCode} username={username} />
