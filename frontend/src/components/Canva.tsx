@@ -1,12 +1,14 @@
-import React from 'react';
 import { Stage, Layer, Line, Text } from 'react-konva';
+import { useState, useRef } from 'react';
 
 // Add states for color, strokeWidth
 const Canva = () => {
-  const [tool, setTool] = React.useState('pen');
+  const [tool, setTool] = useState('pen');
   type LineType = { tool: string; points: number[] };
-  const [lines, setLines] = React.useState<LineType[]>([]);
-  const isDrawing = React.useRef(false);
+  const [lines, setLines] = useState<LineType[]>([]);
+  const [color, setColor ] = useState('black');
+  const [strokeWidth, setStrokeWidth] = useState(5);
+  const isDrawing = useRef(false);
 
   const handleMouseDown = (e : any) => {
     isDrawing.current = true;
@@ -61,8 +63,8 @@ const Canva = () => {
             <Line
               key={i}
               points={line.points}
-              stroke="#df4b26"
-              strokeWidth={5}
+              stroke={color}
+              strokeWidth={strokeWidth}
               tension={0.5}
               lineCap="round"
               lineJoin="round"

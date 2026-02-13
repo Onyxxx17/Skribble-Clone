@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import './App.css'
 import socket from './socket';
 import Chat from './components/Chat';
+import Canva from './components/Canva';
+import GameSettings from './components/GameSettings';
 function App() {
   const [roomCode, setRoomCode] = useState("");
   const [username, setUsername] = useState("");
@@ -10,6 +12,10 @@ function App() {
   const [inRoom, setInRoom] = useState(false);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<string[]>([]);
+  const [isCreator, setIsCreator] = useState(false);
+  const [isGuesser, setIsGuesser] = useState(true);
+  const [totalRounds, setTotalRounds] = useState(1);
+  const [roundTime, setRoundTime] = useState(60);
 
   useEffect(() => {
     socket.connect();
@@ -23,6 +29,7 @@ function App() {
       setRoomCode(res.room.code);
       setInRoom(true);
       setUsers(prev => [...prev,res.username]);
+      setIsCreator(true);
     });
 
     socket.on('room_joined', (room: any) => {
@@ -81,6 +88,15 @@ function App() {
     setRoomCode("");
     setUsers([]);
     setJoinRoomCode("");
+    setIsCreator(false);
+  }
+
+  function startGame() {
+    socket.emit('start_game', { 
+      roomCode, 
+      totalRounds, 
+      roundTime 
+    });
   }
 
   if (inRoom) {
@@ -112,7 +128,20 @@ function App() {
             </div>
           </div>
         </div>
-      
+
+        {/* Game Settings - Only for Creator */}
+        {isCreator && (
+          <GameSettings
+            totalRounds={totalRounds}
+            setTotalRounds={setTotalRounds}
+            roundTime={roundTime}
+            setRoundTime={setRoundTime}
+            numPlayers={users.length}
+            onStartGame={startGame}
+          />
+        )}
+
+        <Canva/>
         {/* Bottom Section - Chat */}
         <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
           <Chat roomId={roomCode} username={username} />

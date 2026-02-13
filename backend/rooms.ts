@@ -13,13 +13,15 @@ export function createRoom(username: string, socketId: string): Room {
   let code: string;
 
   code = generateRoomCode();
-
+  let user: User = { id: socketId, username };
   const room: Room = {
     id: uuidv4(),
     code,
-    users: [{ id: socketId, username }],
+    users: [user],
     drawerIndex: 0,
     messages: [],
+    gameState: "waiting",
+    creator: user
   };
 
   rooms[room.id] = room;

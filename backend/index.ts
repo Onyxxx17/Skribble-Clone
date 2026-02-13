@@ -97,7 +97,30 @@ io.on('connection', (socket) => {
       // Everyone sees incorrect guesses and regular messages
       io.to(roomCode).emit("message_sent", chatMessage);
     }
-  })
+  });
+
+  socket.on("start_game", ({ roomCode, totalRounds, roundTime }) => {
+    const room = getRoomByCode(roomCode);
+    if (!room) {
+      socket.emit("error", "Room not found");
+      return;
+    }
+
+    // Update room settings
+    room.totalRounds = totalRounds;
+    room.roundDuration = roundTime * 1000; // convert to milliseconds
+    room.currentRound = 1;
+    room.gameState = 'playing';
+
+    console.log(`Game started in room ${roomCode}: ${totalRounds} rounds, ${roundTime}s each`);
+
+    // Notify all players that game is starting
+    io.to(roomCode).emit("game_started", {
+      totalRounds,
+      roundDuration: roundTime,
+      currentRound: 1,
+    });
+  });
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
