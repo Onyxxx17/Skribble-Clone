@@ -136,6 +136,9 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on("send_line", ({ line, roomCode, newLine }) => {
+  socket.to(roomCode).emit("receive_line", line, newLine);
+});
   socket.on('disconnect', () => {
     console.log('user disconnected');
     const result = removeUserFromRoom(socket.id);

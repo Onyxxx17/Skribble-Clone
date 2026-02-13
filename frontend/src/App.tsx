@@ -117,25 +117,25 @@ function App() {
     return (
       <div className="min-h-screen flex flex-col p-4">
         {/* Top Section - Room Info */}
-        <div className="bg-[#16213e] border-4 border-[#4cc9f0] pixel-corners p-6 mb-4 shadow-[0_0_30px_rgba(76,201,240,0.2)]">
+        <div className="bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg p-6 mb-4 shadow-xl">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex-1">
-              <h1 className="text-xl md:text-2xl font-bold text-[#e94b9e] mb-3 retro-glow" style={{fontSize: '1.2rem'}}>ROOM: {roomCode}</h1>
-              <p className="text-[#a5b4fc] text-[0.6rem] uppercase tracking-wider">▶ SHARE CODE TO JOIN ◀</p>
+              <h1 className="text-2xl font-bold text-[#ec4899] mb-2">Room: {roomCode}</h1>
+              <p className="text-[#cbd5e1] text-sm">Share this code with others to join!</p>
             </div>
             <button
               onClick={leaveRoom}
-              className="arcade-button bg-[#e94b9e] text-white py-3 px-6 border-[#e94b9e] hover:bg-[#d63384] text-[0.65rem]"
+              className="arcade-button bg-[#ec4899] text-white py-2 px-5 border-[#ec4899] hover:bg-[#db2777] text-sm"
             >
-              EXIT
+              Leave Room
             </button>
           </div>
           
-          <div className="mt-4 bg-[#2d1b4e] border-2 border-[#4cc9f0] p-4">
-            <p className="text-[#06ffa5] mb-3 text-[0.7rem] uppercase tracking-wide">◆ PLAYERS [{users.length}] ◆</p>
+          <div className="mt-4 bg-[#0f172a] border border-[#06b6d4] rounded-lg p-4">
+            <p className="text-[#10b981] mb-3 text-sm font-semibold">Players ({users.length})</p>
             <div className="flex flex-wrap gap-2">
               {users.map((user, index) => (
-                <span key={index} className="bg-[#1a0b2e] border-2 border-[#4ea8af] text-[#4ea8af] px-3 py-2 text-[0.6rem] uppercase">
+                <span key={index} className="bg-[#1e293b] border border-[#14b8a6] text-[#14b8a6] px-3 py-1.5 rounded-md text-sm font-medium">
                   ▸ {user}
                 </span>
               ))}
@@ -145,12 +145,12 @@ function App() {
 
         {/* Current Drawer Display */}
         {gameStarted && (
-          <div className="bg-[#7b2cbf] border-4 border-[#f9c74f] p-4 mb-4 shadow-[0_0_30px_rgba(123,44,191,0.4)] coin-insert">
+          <div className="bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] border border-[#f59e0b] rounded-lg p-4 mb-4 shadow-xl">
             <div className="text-center">
-              <p className="text-[0.6rem] text-[#f9c74f] mb-2 uppercase tracking-widest">★ CURRENT ARTIST ★</p>
-              <p className="text-xl text-white retro-glow" style={{fontSize: '1.5rem'}}>▼ {currentDrawer} ▼</p>
+              <p className="text-sm text-[#fef3c7] mb-1 font-semibold">Current Artist</p>
+              <p className="text-2xl font-bold text-white">🎨 {currentDrawer}</p>
               {isDrawer && (
-                <p className="text-[0.65rem] mt-3 bg-[#06ffa5] text-[#1a0b2e] px-4 py-2 inline-block border-2 border-[#1a0b2e] blink">YOU'RE UP! DRAW NOW!</p>
+                <p className="text-sm mt-2 bg-[#10b981] text-white px-4 py-1.5 rounded-full inline-block font-semibold">That's you! Start drawing!</p>
               )}
             </div>
           </div>
@@ -169,7 +169,7 @@ function App() {
           />
         )}
 
-        {gameStarted && <Canva isDrawer={isDrawer} />}
+        {gameStarted && <Canva isDrawer={isDrawer} roomId={roomCode} />}
         {/* Bottom Section - Chat */}
         <div className="flex-1 flex flex-col bg-[#16213e] border-4 border-[#4cc9f0] pixel-corners overflow-hidden shadow-[0_0_30px_rgba(76,201,240,0.2)]">
           <Chat roomId={roomCode} username={username} />
@@ -180,22 +180,22 @@ function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-[#16213e] border-4 border-[#7b2cbf] pixel-corners p-8 max-w-md w-full shadow-[0_0_50px_rgba(123,44,191,0.3)] coin-insert">
-        <h1 className="text-3xl font-bold text-center mb-8 text-[#4cc9f0] retro-glow uppercase" style={{fontSize: '1.5rem', lineHeight: '1.8'}}>◆ SKETCH ◆<br/>BATTLE</h1>
+      <div className="bg-[#1e293b] border-2 border-[#8b5cf6] rounded-lg p-8 max-w-md w-full shadow-2xl">
+        <h1 className="text-4xl font-bold text-center mb-8 text-[#06b6d4]">Sketch Battle</h1>
         
         {error && (
-          <div className="bg-[#2d1b4e] border-2 border-[#f3722c] text-[#f3722c] px-4 py-3 mb-4 text-[0.65rem] uppercase">
-            ⚠ {error}
+          <div className="bg-[#1e293b] border-2 border-[#f97316] text-[#f97316] px-4 py-3 rounded-lg mb-4 text-sm">
+            ⚠️ {error}
           </div>
         )}
 
         <div className="mb-6">
-          <label className="block text-[#4cc9f0] mb-3 text-[0.65rem] uppercase tracking-wider">▸ PLAYER NAME</label>
+          <label className="block text-[#06b6d4] mb-2 text-sm font-semibold">Your Name</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="ENTER NAME"
+            placeholder="Enter your name"
             className="w-full"
           />
         </div>
@@ -203,42 +203,42 @@ function App() {
         <div className="mb-6">
           <button
             onClick={createRoom}
-            className="w-full arcade-button bg-[#06ffa5] text-[#1a0b2e] py-4 px-6 border-[#06ffa5] hover:bg-[#05e094] text-[0.7rem]"
+            className="w-full arcade-button bg-[#10b981] text-white py-3 px-6 border-[#10b981] hover:bg-[#059669] text-sm"
           >
-            ▶ CREATE ROOM
+            Create New Room
           </button>
         </div>
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t-2 border-[#2d1b4e]"></div>
+            <div className="w-full border-t border-[#334155]"></div>
           </div>
-          <div className="relative flex justify-center text-[0.6rem]">
-            <span className="px-3 bg-[#16213e] text-[#a5b4fc]">◆ OR ◆</span>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-3 bg-[#1e293b] text-[#cbd5e1]">OR</span>
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="block text-[#e94b9e] mb-3 text-[0.65rem] uppercase tracking-wider">▸ JOIN ROOM</label>
+          <label className="block text-[#ec4899] mb-2 text-sm font-semibold">Join Room</label>
           <input
             type="text"
             value={joinRoomCode}
             onChange={(e) => setJoinRoomCode(e.target.value.toUpperCase())}
-            placeholder="CODE"
+            placeholder="Enter room code"
             className="w-full mb-3"
             maxLength={5}
           />
           <button
             onClick={joinRoom}
-            className="w-full arcade-button bg-[#4cc9f0] text-[#1a0b2e] py-4 px-6 border-[#4cc9f0] hover:bg-[#3bb8de] text-[0.7rem]"
+            className="w-full arcade-button bg-[#06b6d4] text-white py-3 px-6 border-[#06b6d4] hover:bg-[#0891b2] text-sm"
           >
-            ▶ JOIN GAME
+            Join Game
           </button>
         </div>
 
-        <div className="text-center mt-6 text-[0.6rem]">
-          <span className={`inline-block w-2 h-2 mr-2 ${connected ? 'bg-[#06ffa5]' : 'bg-[#f3722c]'} ${connected ? '' : 'blink'}`}></span>
-          <span className="text-[#a5b4fc] uppercase">{connected ? '● ONLINE' : '● OFFLINE'}</span>
+        <div className="text-center mt-6 text-sm">
+          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${connected ? 'bg-[#10b981]' : 'bg-[#f97316] blink'}`}></span>
+          <span className="text-[#cbd5e1]">{connected ? 'Online' : 'Offline'}</span>
         </div>
       </div>
     </div>

@@ -1,60 +1,56 @@
 @import "tailwindcss";
 
-/* Retro Input Styling */
+/* Modern Input Styling */
 input[type="text"] {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.75rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.875rem;
   background: var(--retro-bg-deep);
-  border: 3px solid var(--retro-cyan);
+  border: 2px solid var(--retro-cyan);
+  border-radius: 6px;
   color: var(--retro-text-primary);
-  padding: 0.75rem;
-  image-rendering: pixelated;
+  padding: 0.75rem 1rem;
 }
 
 input[type="text"]:focus {
   outline: none;
   border-color: var(--retro-purple);
-  box-shadow: 0 0 20px rgba(123, 44, 191, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 input[type="text"]::placeholder {
   color: var(--retro-text-dim);
 }
 
-/* Retro Select Styling */
+/* Modern Select Styling */
 select {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.65rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.875rem;
   background: var(--retro-bg-deep);
-  border: 3px solid var(--retro-teal);
+  border: 2px solid var(--retro-teal);
+  border-radius: 6px;
   color: var(--retro-text-primary);
-  padding: 0.5rem;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
-  image-rendering: pixelated;
 }
 
 select:focus {
   outline: none;
   border-color: var(--retro-purple);
-  box-shadow: 0 0 20px rgba(123, 44, 191, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
-/* Blink animation for attention */
+/* Blink animation for attention - subtle */
 @keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+  0%, 70% { opacity: 1; }
+  71%, 100% { opacity: 0.5; }
 }
 
 .blink {
-  animation: blink 1s step-start infinite;
+  animation: blink 1.5s ease-in-out infinite;
 }
 
-/* Arcade coin slot effect */
-@keyframes coin-insert {
-  0% { transform: translateY(-100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-.coin-insert {
-  animation: coin-insert 0.3s ease-out;
+/* Smooth fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

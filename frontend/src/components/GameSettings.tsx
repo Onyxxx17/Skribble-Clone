@@ -23,10 +23,10 @@ export default function GameSettings({
   const remainingSeconds = totalSeconds % 60;
 
   return (
-    <div className="bg-[#16213e] border-4 border-[#f9c74f] pixel-corners p-6 mb-4 shadow-[0_0_40px_rgba(249,199,79,0.3)]">
+    <div className="bg-[#1e293b] border-2 border-[#f59e0b] rounded-lg p-6 mb-4 shadow-xl">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h2 className="text-lg text-[#f9c74f] uppercase tracking-wider retro-glow" style={{fontSize: '1rem'}}>⚙ GAME CONFIG</h2>
-        <span className="bg-[#06ffa5] text-[#1a0b2e] text-[0.55rem] px-3 py-1 border-2 border-[#1a0b2e] uppercase tracking-wide">
+        <h2 className="text-xl font-bold text-[#f59e0b]">Game Settings</h2>
+        <span className="bg-[#10b981] text-white text-xs px-3 py-1 rounded-full font-semibold">
           ★ HOST
         </span>
       </div>
@@ -34,18 +34,18 @@ export default function GameSettings({
       <div className="space-y-6">
         {/* Total Rounds */}
         <div>
-          <label className="block text-[0.65rem] text-[#4cc9f0] mb-3 uppercase tracking-wider">
-            ▼ TOTAL ROUNDS
+          <label className="block text-sm font-semibold text-[#06b6d4] mb-3">
+            Total Rounds
           </label>
           <div className="grid grid-cols-4 gap-2">
             {ROUND_OPTIONS.map((rounds) => (
               <button
                 key={rounds}
                 onClick={() => setTotalRounds(rounds)}
-                className={`arcade-button py-3 px-4 text-[0.7rem] ${
+                className={`arcade-button py-2 px-4 text-sm ${
                   totalRounds === rounds
-                    ? 'bg-[#e94b9e] border-[#e94b9e] text-white'
-                    : 'bg-[#2d1b4e] border-[#4cc9f0] text-[#4cc9f0] hover:bg-[#3d2b5e]'
+                    ? 'bg-[#ec4899] border-[#ec4899] text-white font-bold'
+                    : 'bg-[#0f172a] border-[#06b6d4] text-[#06b6d4] hover:bg-[#1e293b]'
                 }`}
               >
                 {rounds}
@@ -56,21 +56,21 @@ export default function GameSettings({
 
         {/* Round Time */}
         <div>
-          <label className="block text-[0.65rem] text-[#4cc9f0] mb-3 uppercase tracking-wider">
-            ▼ TIME PER ROUND
+          <label className="block text-sm font-semibold text-[#06b6d4] mb-3">
+            Time per Round (seconds)
           </label>
           <div className="grid grid-cols-4 gap-2">
             {TIME_OPTIONS.map((time) => (
               <button
                 key={time}
                 onClick={() => setRoundTime(time)}
-                className={`arcade-button py-3 px-4 text-[0.7rem] ${
+                className={`arcade-button py-2 px-4 text-sm ${
                   roundTime === time
-                    ? 'bg-[#f9c74f] border-[#f9c74f] text-[#1a0b2e]'
-                    : 'bg-[#2d1b4e] border-[#4cc9f0] text-[#4cc9f0] hover:bg-[#3d2b5e]'
+                    ? 'bg-[#f59e0b] border-[#f59e0b] text-white font-bold'
+                    : 'bg-[#0f172a] border-[#06b6d4] text-[#06b6d4] hover:bg-[#1e293b]'
                 }`}
               >
-                {time}S
+                {time}s
               </button>
             ))}
           </div>
@@ -79,25 +79,25 @@ export default function GameSettings({
         {/* Start Game Button */}
         <button
           onClick={onStartGame}
-          className="w-full arcade-button bg-[#06ffa5] text-[#1a0b2e] py-4 px-6 border-[#06ffa5] hover:bg-[#05e094] text-[0.8rem] retro-glow"
+          className="w-full arcade-button bg-[#10b981] text-white py-3 px-6 border-[#10b981] hover:bg-[#059669] text-lg font-bold"
         >
-          ▶ START GAME ◀
+          🎮 Start Game
         </button>
         
         {/* Game Info */}
-        <div className="bg-[#2d1b4e] border-2 border-[#4cc9f0] p-4 text-center">
-          <p className="text-[0.6rem] text-[#a5b4fc] mb-2 uppercase">
-            {totalRounds} ROUND{totalRounds > 1 ? 'S' : ''} × {roundTime}S × {numPlayers} PLAYER{numPlayers > 1 ? 'S' : ''}
+        <div className="bg-[#0f172a] border border-[#06b6d4] rounded-lg p-4 text-center">
+          <p className="text-xs text-[#cbd5e1] mb-2">
+            {totalRounds} round{totalRounds > 1 ? 's' : ''} × {roundTime}s × {numPlayers} player{numPlayers > 1 ? 's' : ''}
           </p>
-          <p className="text-[0.65rem] text-[#06ffa5]">
-            <span className="text-[1rem] retro-glow">
+          <p className="text-sm text-[#10b981]">
+            <span className="text-2xl font-bold">
               {totalMinutes}:{remainingSeconds.toString().padStart(2, '0')}
             </span>
             <br/>
-            <span className="text-[#4cc9f0] text-[0.55rem] uppercase">TOTAL TIME</span>
+            <span className="text-[#06b6d4] text-xs">total game time</span>
           </p>
-          <p className="text-[0.55rem] text-[#a5b4fc] mt-3 opacity-75 uppercase">
-            EACH PLAYER DRAWS ONCE PER ROUND
+          <p className="text-xs text-[#cbd5e1] mt-3 opacity-75">
+            Each player draws once per round
           </p>
         </div>
       </div>
