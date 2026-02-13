@@ -55,14 +55,14 @@ export default function Chat({
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="bg-blue-500 text-white px-4 py-3">
-        <h2 className="text-lg font-semibold">Chat</h2>
+      <div className="bg-[#7b2cbf] border-b-4 border-[#6a25a8] px-4 py-3">
+        <h2 className="text-[0.75rem] text-white uppercase tracking-widest">▶ CHAT TERMINAL ◀</h2>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 bg-[#1a0b2e]">
         {displayMessages.length === 0 ? (
-          <p className="text-center text-gray-400 mt-8">No messages yet. Start the conversation!</p>
+          <p className="text-center text-[#a5b4fc] mt-8 text-[0.65rem] uppercase opacity-50">◆ NO MESSAGES ◆<br/>START CHATTING!</p>
         ) : (
           displayMessages.map((item, index) => {
             if (item.type === 'message') {
@@ -75,16 +75,16 @@ export default function Chat({
                   }`}
                 >
                   <div
-                    className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                    className={`inline-block max-w-xs lg:max-w-md px-4 py-3 border-2 ${
                       msg.user.username === username
-                        ? "bg-blue-500 text-white"
-                        : "bg-white text-gray-800"
+                        ? "bg-[#4cc9f0] text-[#1a0b2e] border-[#3bb8de]"
+                        : "bg-[#2d1b4e] text-[#e0e7ff] border-[#4ea8af]"
                     }`}
                   >
-                    <p className="font-semibold text-sm mb-1">
-                      {msg.user.username === username ? "You" : msg.user.username}
+                    <p className="text-[0.55rem] mb-2 uppercase tracking-wide opacity-75">
+                      {msg.user.username === username ? "▸ YOU" : `▸ ${msg.user.username}`}
                     </p>
-                    <p className="text-sm">{msg.message}</p>
+                    <p className="text-[0.65rem] leading-relaxed">{msg.message}</p>
                   </div>
                 </div>
               );
@@ -94,9 +94,9 @@ export default function Chat({
               if (guess.isCorrectGuess) {
                 return (
                   <div key={index} className="mb-3 text-center">
-                    <div className="inline-block bg-green-500 text-white px-4 py-2 rounded-lg">
-                      <p className="text-sm font-semibold">
-                        🎉 {guess.user.username} guessed the word!
+                    <div className="inline-block bg-[#06ffa5] text-[#1a0b2e] border-4 border-[#05e094] px-4 py-3">
+                      <p className="text-[0.65rem] uppercase tracking-wide">
+                        ★ {guess.user.username} GUESSED IT! ★
                       </p>
                     </div>
                   </div>
@@ -110,7 +110,7 @@ export default function Chat({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 p-4 bg-white">
+      <div className="border-t-4 border-[#7b2cbf] p-4 bg-[#16213e]">
         <div className="flex gap-2">
           <input
             type="text"
@@ -121,14 +121,14 @@ export default function Chat({
                 sendMessage();
               }
             }}
-            placeholder="Type your message..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="TYPE MESSAGE..."
+            className="flex-1"
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
+            className="arcade-button bg-[#06ffa5] text-[#1a0b2e] px-6 py-3 border-[#06ffa5] hover:bg-[#05e094] text-[0.65rem]"
           >
-            Send
+            SEND
           </button>
         </div>
       </div>

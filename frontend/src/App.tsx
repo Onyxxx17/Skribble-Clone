@@ -115,28 +115,28 @@ function App() {
 
   if (inRoom) {
     return (
-      <div className="min-h-screen bg-gray-100 flex flex-col p-4">
+      <div className="min-h-screen flex flex-col p-4">
         {/* Top Section - Room Info */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-[#16213e] border-4 border-[#4cc9f0] pixel-corners p-6 mb-4 shadow-[0_0_30px_rgba(76,201,240,0.2)]">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-blue-600 mb-2">Room: {roomCode}</h1>
-              <p className="text-gray-600 text-sm">Share this code with others to join!</p>
+              <h1 className="text-xl md:text-2xl font-bold text-[#e94b9e] mb-3 retro-glow" style={{fontSize: '1.2rem'}}>ROOM: {roomCode}</h1>
+              <p className="text-[#a5b4fc] text-[0.6rem] uppercase tracking-wider">▶ SHARE CODE TO JOIN ◀</p>
             </div>
             <button
               onClick={leaveRoom}
-              className="bg-red-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-600 transition duration-200"
+              className="arcade-button bg-[#e94b9e] text-white py-3 px-6 border-[#e94b9e] hover:bg-[#d63384] text-[0.65rem]"
             >
-              Leave Room
+              EXIT
             </button>
           </div>
           
-          <div className="mt-4 bg-gray-50 rounded-lg p-4">
-            <p className="text-gray-700 font-semibold mb-2">Players ({users.length}):</p>
+          <div className="mt-4 bg-[#2d1b4e] border-2 border-[#4cc9f0] p-4">
+            <p className="text-[#06ffa5] mb-3 text-[0.7rem] uppercase tracking-wide">◆ PLAYERS [{users.length}] ◆</p>
             <div className="flex flex-wrap gap-2">
               {users.map((user, index) => (
-                <span key={index} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                  👤 {user}
+                <span key={index} className="bg-[#1a0b2e] border-2 border-[#4ea8af] text-[#4ea8af] px-3 py-2 text-[0.6rem] uppercase">
+                  ▸ {user}
                 </span>
               ))}
             </div>
@@ -145,16 +145,17 @@ function App() {
 
         {/* Current Drawer Display */}
         {gameStarted && (
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-4 mb-4 shadow-lg">
+          <div className="bg-[#7b2cbf] border-4 border-[#f9c74f] p-4 mb-4 shadow-[0_0_30px_rgba(123,44,191,0.4)] coin-insert">
             <div className="text-center">
-              <p className="text-sm font-semibold mb-1">Current Drawer</p>
-              <p className="text-2xl font-bold">🎨 {currentDrawer}</p>
+              <p className="text-[0.6rem] text-[#f9c74f] mb-2 uppercase tracking-widest">★ CURRENT ARTIST ★</p>
+              <p className="text-xl text-white retro-glow" style={{fontSize: '1.5rem'}}>▼ {currentDrawer} ▼</p>
               {isDrawer && (
-                <p className="text-sm mt-2 bg-white/20 rounded-full py-1 px-3 inline-block">That's you! Start drawing!</p>
+                <p className="text-[0.65rem] mt-3 bg-[#06ffa5] text-[#1a0b2e] px-4 py-2 inline-block border-2 border-[#1a0b2e] blink">YOU'RE UP! DRAW NOW!</p>
               )}
             </div>
           </div>
         )}
+
 
         {/* Game Settings - Only for Creator */}
         {isCreator && !gameStarted && (
@@ -170,7 +171,7 @@ function App() {
 
         {gameStarted && <Canva isDrawer={isDrawer} />}
         {/* Bottom Section - Chat */}
-        <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="flex-1 flex flex-col bg-[#16213e] border-4 border-[#4cc9f0] pixel-corners overflow-hidden shadow-[0_0_30px_rgba(76,201,240,0.2)]">
           <Chat roomId={roomCode} username={username} />
         </div>
       </div>
@@ -178,66 +179,66 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">Skribble Clone</h1>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="bg-[#16213e] border-4 border-[#7b2cbf] pixel-corners p-8 max-w-md w-full shadow-[0_0_50px_rgba(123,44,191,0.3)] coin-insert">
+        <h1 className="text-3xl font-bold text-center mb-8 text-[#4cc9f0] retro-glow uppercase" style={{fontSize: '1.5rem', lineHeight: '1.8'}}>◆ SKETCH ◆<br/>BATTLE</h1>
         
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+          <div className="bg-[#2d1b4e] border-2 border-[#f3722c] text-[#f3722c] px-4 py-3 mb-4 text-[0.65rem] uppercase">
+            ⚠ {error}
           </div>
         )}
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2">Your Name</label>
+          <label className="block text-[#4cc9f0] mb-3 text-[0.65rem] uppercase tracking-wider">▸ PLAYER NAME</label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your name"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="ENTER NAME"
+            className="w-full"
           />
         </div>
 
         <div className="mb-6">
           <button
             onClick={createRoom}
-            className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
+            className="w-full arcade-button bg-[#06ffa5] text-[#1a0b2e] py-4 px-6 border-[#06ffa5] hover:bg-[#05e094] text-[0.7rem]"
           >
-            Create New Room
+            ▶ CREATE ROOM
           </button>
         </div>
 
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t-2 border-[#2d1b4e]"></div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">OR</span>
+          <div className="relative flex justify-center text-[0.6rem]">
+            <span className="px-3 bg-[#16213e] text-[#a5b4fc]">◆ OR ◆</span>
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">Join Room</label>
+          <label className="block text-[#e94b9e] mb-3 text-[0.65rem] uppercase tracking-wider">▸ JOIN ROOM</label>
           <input
             type="text"
             value={joinRoomCode}
             onChange={(e) => setJoinRoomCode(e.target.value.toUpperCase())}
-            placeholder="Enter room code"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 mb-3"
+            placeholder="CODE"
+            className="w-full mb-3"
             maxLength={5}
           />
           <button
             onClick={joinRoom}
-            className="w-full bg-green-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition duration-200"
+            className="w-full arcade-button bg-[#4cc9f0] text-[#1a0b2e] py-4 px-6 border-[#4cc9f0] hover:bg-[#3bb8de] text-[0.7rem]"
           >
-            Join Room
+            ▶ JOIN GAME
           </button>
         </div>
 
-        <div className="text-center mt-4">
-          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${connected ? 'bg-green-500' : 'bg-red-500'}`}></span>
-          <span className="text-sm text-gray-600">{connected ? 'Connected' : 'Disconnected'}</span>
+        <div className="text-center mt-6 text-[0.6rem]">
+          <span className={`inline-block w-2 h-2 mr-2 ${connected ? 'bg-[#06ffa5]' : 'bg-[#f3722c]'} ${connected ? '' : 'blink'}`}></span>
+          <span className="text-[#a5b4fc] uppercase">{connected ? '● ONLINE' : '● OFFLINE'}</span>
         </div>
       </div>
     </div>

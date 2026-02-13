@@ -43,27 +43,27 @@ const Canva = ( { isDrawer }: CanvaProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
+    <div className="bg-[#16213e] border-4 border-[#7b2cbf] pixel-corners p-4 mb-4 shadow-[0_0_30px_rgba(123,44,191,0.3)]">
       {isDrawer ? (
-        <div className="mb-4 flex items-center gap-4">
-          <label className="font-semibold text-gray-700">Tool:</label>
+        <div className="mb-4 flex items-center gap-4 flex-wrap">
+          <label className="text-[#f9c74f] text-[0.65rem] uppercase tracking-wider">▼ TOOL:</label>
           <select
             value={tool}
             onChange={(e) => {
               setTool(e.target.value);
             }}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2"
           >
-            <option value="pen">Pen</option>
-            <option value="eraser">Eraser</option>
+            <option value="pen">PEN</option>
+            <option value="eraser">ERASER</option>
           </select>
         </div>
       ) : (
-        <div className="mb-4 bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-center">
-          <p className="text-yellow-800 font-semibold">👀 Spectator Mode - Watch and Guess!</p>
+        <div className="mb-4 bg-[#2d1b4e] border-2 border-[#f9c74f] p-3 text-center">
+          <p className="text-[#f9c74f] text-[0.65rem] uppercase tracking-wide">◆ SPECTATOR MODE - WATCH & GUESS! ◆</p>
         </div>
       )}
-      <div className="border-2 border-gray-300 rounded-lg overflow-hidden" style={{ cursor: isDrawer ? 'crosshair' : 'not-allowed' }}>
+      <div className="border-4 border-[#4cc9f0] overflow-hidden bg-white" style={{ cursor: isDrawer ? 'crosshair' : 'not-allowed' }}>
         <Stage
         width={window.innerWidth}
         height={window.innerHeight}
@@ -75,7 +75,7 @@ const Canva = ( { isDrawer }: CanvaProps) => {
         onTouchEnd={handleMouseUp}
       >
         <Layer>
-          <Text text="Just start drawing" x={5} y={30} />
+          <Text text="START DRAWING..." x={10} y={30} fontSize={16} fill="#cccccc" fontFamily="Press Start 2P" />
           {lines.map((line, i) => (
             <Line
               key={i}
