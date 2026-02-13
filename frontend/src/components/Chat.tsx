@@ -5,9 +5,11 @@ import type { ChatMessage, DisplayMessage, Guess } from "../types/types";
 export default function Chat({
   roomId,
   username,
+  isDrawer
 }: {
   roomId: string;
   username: string;
+  isDrawer: boolean
 }) {
   const [message, setMessage] = useState("");
   const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>([]);
@@ -15,9 +17,9 @@ export default function Chat({
   // Reference to the bottom of the messages list - used to auto-scroll to the latest message
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   useEffect(() => {
     // Listen for chat messages
@@ -36,9 +38,9 @@ export default function Chat({
     };
   }, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [displayMessages]);
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [displayMessages]);
 
   const sendMessage = () => {
     if (!message.trim()) return;
@@ -55,7 +57,7 @@ export default function Chat({
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] px-4 py-3">
+      <div className="bg-linear-to-r from-[#3261bd] to-[#301956] px-4 py-3">
         <h2 className="text-base font-bold text-white">Chat</h2>
       </div>
 
@@ -111,7 +113,7 @@ export default function Chat({
 
       {/* Input Area */}
       <div className="border-t border-[#334155] p-4 bg-[#1e293b]">
-        <div className="flex gap-2">
+        <div className="flex gap-2 ">
           <input
             type="text"
             value={message}
@@ -121,15 +123,16 @@ export default function Chat({
                 sendMessage();
               }
             }}
-            placeholder="Type your message..."
+            placeholder= {isDrawer ? "Cannot send messages as a drawer" : "Type your message..."}
             className="flex-1"
+            disabled={isDrawer}
           />
-          <button
+          {!isDrawer && <button
             onClick={sendMessage}
             className="arcade-button bg-[#10b981] text-white px-6 py-2 border-[#10b981] hover:bg-[#059669] text-sm"
           >
             Send
-          </button>
+          </button>}
         </div>
       </div>
     </div>

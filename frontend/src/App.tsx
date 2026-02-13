@@ -145,10 +145,10 @@ function App() {
 
         {/* Current Drawer Display */}
         {gameStarted && (
-          <div className="bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] border border-[#f59e0b] rounded-lg p-4 mb-4 shadow-xl">
+          <div className="bg-[#273c5f] border border-[#000000] rounded-lg p-4 mb-4 shadow-xl">
             <div className="text-center">
               <p className="text-sm text-[#fef3c7] mb-1 font-semibold">Current Artist</p>
-              <p className="text-2xl font-bold text-white">🎨 {currentDrawer}</p>
+              <p className="text-2xl font-bold text-white">🎨 {currentDrawer} 🎨 </p>
               {isDrawer && (
                 <p className="text-sm mt-2 bg-[#10b981] text-white px-4 py-1.5 rounded-full inline-block font-semibold">That's you! Start drawing!</p>
               )}
@@ -169,11 +169,22 @@ function App() {
           />
         )}
 
-        {gameStarted && <Canva isDrawer={isDrawer} roomId={roomCode} />}
-        {/* Bottom Section - Chat */}
-        <div className="flex-1 flex flex-col bg-[#16213e] border-4 border-[#4cc9f0] pixel-corners overflow-hidden shadow-[0_0_30px_rgba(76,201,240,0.2)]">
-          <Chat roomId={roomCode} username={username} />
-        </div>
+        {/* Canvas and Chat Side by Side */}
+        {gameStarted && (
+          <div className="flex flex-col lg:flex-row gap-4 flex-1">
+            {/* Canvas Section */}
+            <div className="flex-1 lg:w-2/3">
+              <Canva isDrawer={isDrawer} roomId={roomCode} />
+            </div>
+            
+            {/* Chat Section */}
+            <div className="flex flex-col lg:w-1/3 min-h-125 lg:min-h-0">
+              <div className="flex-1 flex flex-col bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg overflow-hidden shadow-xl">
+                <Chat roomId={roomCode} username={username} isDrawer={isDrawer} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
