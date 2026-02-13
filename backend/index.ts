@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { createRoom, getRoomByCode, joinRoom, removeUserFromRoom, findUserBySocketIdAndRoom } from "./rooms";
-import { Room } from "./types";
-import { addMessageToRoom, createGuess, createMessage } from "./messages";
+import { GameEngine } from "./GameServer/gameEngine.js";
+import { GameManager } from "./GameServer/gameManager.js";
+import { RoomManager } from "./GameServer/Rooms/roomManager.js";
 
 const app = express();
 const server = createServer(app);
@@ -17,6 +17,10 @@ const io = new Server(server, {
 
 app.use(cors());
 
+const roomManager = new RoomManager();
+const gameEngine = new GameEngine(roomManager);
+const gameManager = new GameManager(roomManager, gameEngine);
+
 app.get('/', (_req, res) => {
   res.send('Hello world');
 });
@@ -26,8 +30,8 @@ io.on('connection', (socket) => {
   console.log('a user connected');
   
   socket.on('create_room', ({username})=>{
-    const room : Room = createRoom(username,socket.id);
-    room.word = "WORD";
+    const room = gameManager.createRoom(username, socket.id);
+    room.setWord("WORD");
     socket.join(room.code);
     socket.emit('room_created', {
       room,  
@@ -36,7 +40,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on("join_room", ({ roomCode, username }) => {
-    const room = joinRoom(roomCode, username, socket.id);
+    const room = gameManager.joinRoom(roomCode, username, socket.id);
     if (!room) {
       socket.emit("error", "Room not found");
       return;
@@ -51,104 +55,67 @@ io.on('connection', (socket) => {
   });
 
   socket.on("leave_room", (roomCode : string) => {
-    const result = removeUserFromRoom(socket.id, roomCode);
+    const result = gameManager.leaveRoom(socket.id, roomCode);
     if (result) {
       socket.leave(result.room.code);
-      console.log(`${result.username} left ${result.room.code}`);
-      socket.to(result.room.code).emit("user_left", result.username);
+      console.log(`${result.user.username} left ${result.room.code}`);
+      socket.to(result.room.code).emit("user_left", result.user.username);
     }
   });
 
   socket.on("send_message", ({  username, roomCode, message}) => {
-    
-    let chatMessage;
     try {
-       chatMessage = createMessage(socket.id, roomCode, message);
-    } catch (error) {
-      socket.emit("error", error);
-      console.log(error);
-      return;
-    }
-    
-    const room = getRoomByCode(roomCode);
-    if (!room) return;
+      const { chatMessage, guess, user, room, isFirstCorrect } = gameManager.handleChatMessage(socket.id, roomCode, message);
 
-    addMessageToRoom(room, chatMessage);
-
-    const user = findUserBySocketIdAndRoom(socket.id, roomCode);
-    if(!user) return;
-    let guess;
-    try {
-      guess = createGuess(socket.id, roomCode, message);
-      
-      // If correct guess, mark user as guessed and notify everyone
-      if (guess.isCorrectGuess && !user.correctlyGuessed) {
-        user.correctlyGuessed = true;
+      if (guess.isCorrectGuess && isFirstCorrect) {
         io.to(roomCode).emit("guess", guess);
       }
-    } catch (error) {
-      socket.emit("error", error);
-    }
 
-    // Only the current message: if it's a correct guess or user already guessed, only sender sees it
-    if(guess?.isCorrectGuess || user.correctlyGuessed){
-      socket.emit("message_sent", chatMessage);
-    } else{
-      // Everyone sees incorrect guesses and regular messages
-      io.to(roomCode).emit("message_sent", chatMessage);
+      if (guess.isCorrectGuess || user.correctlyGuessed) {
+        socket.emit("message_sent", chatMessage);
+      } else {
+        io.to(roomCode).emit("message_sent", chatMessage);
+      }
+    } catch (error) {
+      socket.emit("error", (error as Error).message);
     }
   });
 
   socket.on("start_game", ({ roomCode, totalRounds, roundTime }) => {
-    const room = getRoomByCode(roomCode);
-    if (!room) {
-      socket.emit("error", "Room not found");
-      return;
+    try {
+      const { room, currentDrawer } = gameManager.startGame(roomCode, totalRounds, roundTime);
+
+      room.users.forEach((user) => {
+        const userSocket = io.sockets.sockets.get(user.id);
+        if (userSocket) {
+          userSocket.emit("is_drawer", user.id === currentDrawer.id);
+        }
+      });
+
+      io.to(roomCode).emit("game_started", {
+        totalRounds,
+        roundDuration: roundTime,
+        currentRound: room.currentRound,
+        currentDrawer: currentDrawer.username,
+      });
+    } catch (error) {
+      socket.emit("error", (error as Error).message);
     }
-
-    // Update room settings
-    room.totalRounds = totalRounds;
-    room.roundDuration = roundTime * 1000;
-    room.currentRound = 1;
-    room.gameState = 'playing';
-
-    console.log(`Game started in room ${roomCode}: ${totalRounds} rounds, ${roundTime}s each`);
-
-    room.drawerIndex = Math.floor(Math.random() * room.users.length);
-    const currentDrawer = room.users[room.drawerIndex];
-    
-    console.log(`Drawer: ${currentDrawer.username}`);
-
-    // Notify each player whether they are the drawer
-    room.users.forEach((user) => {
-      const userSocket = io.sockets.sockets.get(user.id);
-      if (userSocket) {
-        userSocket.emit("is_drawer", user.id === currentDrawer.id);
-      }
-    });
-
-    // Notify all players that game is starting
-    io.to(roomCode).emit("game_started", {
-      totalRounds,
-      roundDuration: roundTime,
-      currentRound: 1,
-      currentDrawer: currentDrawer.username,
-    });
   });
 
   socket.on("send_line", ({ line, roomCode, newLine }) => {
-  socket.to(roomCode).emit("receive_line", line, newLine);
-});
+    socket.to(roomCode).emit("receive_line", line, newLine);
+  });
 
-socket.on("clear_canvas", ({ roomCode }) => {
-  socket.to(roomCode).emit("clear_canvas");
-});
+  socket.on("clear_canvas", ({ roomCode }) => {
+    socket.to(roomCode).emit("clear_canvas");
+  });
   socket.on('disconnect', () => {
     console.log('user disconnected');
-    const result = removeUserFromRoom(socket.id);
+    const result = gameManager.leaveRoom(socket.id);
     if (result) {
-      console.log(`${result.username} disconnected from ${result.room.code}`);
-      socket.to(result.room.code).emit("user_left", result.username);
+      console.log(`${result.user.username} disconnected from ${result.room.code}`);
+      socket.to(result.room.code).emit("user_left", result.user.username);
     }
   });
 });

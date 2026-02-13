@@ -1,4 +1,4 @@
-import { User } from "./GameServer/User/user.js";
+import { User } from "../GameServer/User/user.js";
 
 export type GameState = "waiting" | "playing" | "round_end" | "game_end";
 
