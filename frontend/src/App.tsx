@@ -16,6 +16,9 @@ function App() {
   const [isGuesser, setIsGuesser] = useState(true);
   const [totalRounds, setTotalRounds] = useState(1);
   const [roundTime, setRoundTime] = useState(60);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [isDrawer, setIsDrawer] = useState(false);
+  const [currentDrawer, setCurrentDrawer] = useState("");
 
   useEffect(() => {
     socket.connect();
@@ -48,6 +51,17 @@ function App() {
       console.log("User left:", leftUsername);
       alert(`${leftUsername} left the room`);
       setUsers(prev => prev.filter(u => u !== leftUsername));
+    });
+
+    socket.on('game_started', (gameSettings: any) => {
+      setTotalRounds(gameSettings.totalRounds);
+      setRoundTime(gameSettings.roundDuration / 1000);
+      setGameStarted(true);
+      setCurrentDrawer(gameSettings.currentDrawer);
+    });
+
+    socket.on('is_drawer', (isDrawer: boolean) => {
+      setIsDrawer(isDrawer);
     });
 
     socket.on('error', (message: string) => {
@@ -129,8 +143,21 @@ function App() {
           </div>
         </div>
 
+        {/* Current Drawer Display */}
+        {gameStarted && (
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-4 mb-4 shadow-lg">
+            <div className="text-center">
+              <p className="text-sm font-semibold mb-1">Current Drawer</p>
+              <p className="text-2xl font-bold">🎨 {currentDrawer}</p>
+              {isDrawer && (
+                <p className="text-sm mt-2 bg-white/20 rounded-full py-1 px-3 inline-block">That's you! Start drawing!</p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Game Settings - Only for Creator */}
-        {isCreator && (
+        {isCreator && !gameStarted && (
           <GameSettings
             totalRounds={totalRounds}
             setTotalRounds={setTotalRounds}
@@ -141,7 +168,7 @@ function App() {
           />
         )}
 
-        <Canva/>
+        {gameStarted && <Canva isDrawer={isDrawer} />}
         {/* Bottom Section - Chat */}
         <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
           <Chat roomId={roomCode} username={username} />

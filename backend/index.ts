@@ -108,17 +108,31 @@ io.on('connection', (socket) => {
 
     // Update room settings
     room.totalRounds = totalRounds;
-    room.roundDuration = roundTime * 1000; // convert to milliseconds
+    room.roundDuration = roundTime * 1000;
     room.currentRound = 1;
     room.gameState = 'playing';
 
     console.log(`Game started in room ${roomCode}: ${totalRounds} rounds, ${roundTime}s each`);
+
+    room.drawerIndex = Math.floor(Math.random() * room.users.length);
+    const currentDrawer = room.users[room.drawerIndex];
+    
+    console.log(`Drawer: ${currentDrawer.username}`);
+
+    // Notify each player whether they are the drawer
+    room.users.forEach((user) => {
+      const userSocket = io.sockets.sockets.get(user.id);
+      if (userSocket) {
+        userSocket.emit("is_drawer", user.id === currentDrawer.id);
+      }
+    });
 
     // Notify all players that game is starting
     io.to(roomCode).emit("game_started", {
       totalRounds,
       roundDuration: roundTime,
       currentRound: 1,
+      currentDrawer: currentDrawer.username,
     });
   });
 
