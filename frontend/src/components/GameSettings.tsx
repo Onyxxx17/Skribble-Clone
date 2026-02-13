@@ -1,3 +1,5 @@
+import { ROUND_OPTIONS, TIME_OPTIONS } from "../constants";
+
 interface GameSettingsProps {
   totalRounds: number;
   setTotalRounds: (rounds: number) => void;
@@ -6,9 +8,6 @@ interface GameSettingsProps {
   numPlayers: number;
   onStartGame: () => void;
 }
-
-const ROUND_OPTIONS = [1, 2, 4, 8];
-const TIME_OPTIONS = [30, 60, 90, 120];
 
 export default function GameSettings({
   totalRounds,
