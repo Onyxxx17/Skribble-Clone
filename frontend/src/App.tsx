@@ -4,6 +4,7 @@ import socket from './socket';
 import Chat from './components/Chat';
 import Canva from './components/Canva';
 import GameSettings from './components/GameSettings';
+import WordSelection from './components/WordSelection';
 function App() {
   const [roomCode, setRoomCode] = useState("");
   const [username, setUsername] = useState("");
@@ -19,6 +20,7 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [isDrawer, setIsDrawer] = useState(false);
   const [currentDrawer, setCurrentDrawer] = useState("");
+  const [currentWord, setCurrentWord] = useState("");
 
   useEffect(() => {
     socket.connect();
@@ -61,18 +63,38 @@ function App() {
     });
 
     socket.on('is_drawer', (isDrawer: boolean) => {
+      console.log('is_drawer event received:', isDrawer);
       setIsDrawer(isDrawer);
+      if (!isDrawer) {
+        setCurrentWord("");
+      }
     });
+
+    socket.on('word_finalized', ({ word }: { word: string }) => {
+      console.log('Word finalized event received:', word);
+      setCurrentWord(word);
+    });
+
+    socket.on("turn_ended", ()=> {
+      setCurrentWord("");
+    })
 
     socket.on('error', (message: string) => {
       setError(message);
     });
-
     return () => {
       socket.off();
       socket.disconnect();
     };
   }, []);
+
+  // Trigger start_turn when drawer changes
+  useEffect(() => {
+    if (isDrawer && gameStarted && roomCode) {
+      console.log('Drawer changed, emitting start_turn. Current word:', currentWord);
+      socket.emit('start_turn', isDrawer, roomCode);
+    }
+  }, [isDrawer, gameStarted, roomCode]);
 
   function createRoom() {
     if (!username.trim()) {
@@ -169,12 +191,26 @@ function App() {
           />
         )}
 
+        {/* Word Selection Modal */}
+        <WordSelection roomCode={roomCode} isDrawer={isDrawer} />
+
         {/* Canvas and Chat Side by Side */}
         {gameStarted && (
           <div className="flex flex-col lg:flex-row gap-4 flex-1">
             {/* Canvas Section */}
             <div className="flex-1 lg:w-2/3">
-              <Canva isDrawer={isDrawer} roomId={roomCode} />
+              {(() => {
+                console.log('Render check - isDrawer:', isDrawer, 'currentWord:', currentWord);
+                return isDrawer && currentWord && (
+                  <div className="bg-[#10b981] border-2 border-[#059669] rounded-lg p-4 mb-4 shadow-xl">
+                    <div className="text-center">
+                      <p className="text-sm text-white mb-1 font-semibold">Your Word</p>
+                      <p className="text-3xl font-bold text-white tracking-wider">{currentWord}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+                <Canva isDrawer={isDrawer} roomId={roomCode} />
             </div>
             
             {/* Chat Section */}

@@ -5,7 +5,7 @@ import { ChatMessage, Guess } from "../types/types.js";
 import { User } from "./User/user.js";
 
 export class GameEngine {
-  constructor(private readonly roomManager: RoomManager) {}
+  constructor(private readonly roomManager: RoomManager) { }
 
   createChatMessage(socketId: string, roomCode: string, message: string): { room: Room; user: User; chatMessage: ChatMessage } {
     const room = this.roomManager.getRoomByCode(roomCode);
