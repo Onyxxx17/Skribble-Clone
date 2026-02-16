@@ -5,6 +5,8 @@ import Chat from './components/Chat';
 import Canva from './components/Canva';
 import GameSettings from './components/GameSettings';
 import WordSelection from './components/WordSelection';
+import PlayerHeader from './components/PlayerHeader';
+import LobbyScreen from './components/LobbyScreen';
 function App() {
   const [roomCode, setRoomCode] = useState("");
   const [username, setUsername] = useState("");
@@ -14,7 +16,6 @@ function App() {
   const [error, setError] = useState("");
   const [users, setUsers] = useState<string[]>([]);
   const [isCreator, setIsCreator] = useState(false);
-  const [isGuesser, setIsGuesser] = useState(true);
   const [totalRounds, setTotalRounds] = useState(1);
   const [roundTime, setRoundTime] = useState(60);
   const [gameStarted, setGameStarted] = useState(false);
@@ -139,31 +140,7 @@ function App() {
     return (
       <div className="min-h-screen flex flex-col p-4">
         {/* Top Section - Room Info */}
-        <div className="bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg p-6 mb-4 shadow-xl">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-[#ec4899] mb-2">Room: {roomCode}</h1>
-              <p className="text-[#cbd5e1] text-sm">Share this code with others to join!</p>
-            </div>
-            <button
-              onClick={leaveRoom}
-              className="arcade-button bg-[#ec4899] text-white py-2 px-5 border-[#ec4899] hover:bg-[#db2777] text-sm"
-            >
-              Leave Room
-            </button>
-          </div>
-          
-          <div className="mt-4 bg-[#0f172a] border border-[#06b6d4] rounded-lg p-4">
-            <p className="text-[#10b981] mb-3 text-sm font-semibold">Players ({users.length})</p>
-            <div className="flex flex-wrap gap-2">
-              {users.map((user, index) => (
-                <span key={index} className="bg-[#1e293b] border border-[#14b8a6] text-[#14b8a6] px-3 py-1.5 rounded-md text-sm font-medium">
-                  ▸ {user}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+        <PlayerHeader roomCode={roomCode} users={users} onLeaveRoom={leaveRoom} />
 
         {/* Current Drawer Display */}
         {gameStarted && (
@@ -226,69 +203,16 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-[#1e293b] border-2 border-[#8b5cf6] rounded-lg p-8 max-w-md w-full shadow-2xl">
-        <h1 className="text-4xl font-bold text-center mb-8 text-[#06b6d4]">Sketch Battle</h1>
-        
-        {error && (
-          <div className="bg-[#1e293b] border-2 border-[#f97316] text-[#f97316] px-4 py-3 rounded-lg mb-4 text-sm">
-            ⚠️ {error}
-          </div>
-        )}
-
-        <div className="mb-6">
-          <label className="block text-[#06b6d4] mb-2 text-sm font-semibold">Your Name</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your name"
-            className="w-full"
-          />
-        </div>
-
-        <div className="mb-6">
-          <button
-            onClick={createRoom}
-            className="w-full arcade-button bg-[#10b981] text-white py-3 px-6 border-[#10b981] hover:bg-[#059669] text-sm"
-          >
-            Create New Room
-          </button>
-        </div>
-
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#334155]"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-[#1e293b] text-[#cbd5e1]">OR</span>
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-[#ec4899] mb-2 text-sm font-semibold">Join Room</label>
-          <input
-            type="text"
-            value={joinRoomCode}
-            onChange={(e) => setJoinRoomCode(e.target.value.toUpperCase())}
-            placeholder="Enter room code"
-            className="w-full mb-3"
-            maxLength={5}
-          />
-          <button
-            onClick={joinRoom}
-            className="w-full arcade-button bg-[#06b6d4] text-white py-3 px-6 border-[#06b6d4] hover:bg-[#0891b2] text-sm"
-          >
-            Join Game
-          </button>
-        </div>
-
-        <div className="text-center mt-6 text-sm">
-          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${connected ? 'bg-[#10b981]' : 'bg-[#f97316] blink'}`}></span>
-          <span className="text-[#cbd5e1]">{connected ? 'Online' : 'Offline'}</span>
-        </div>
-      </div>
-    </div>
+    <LobbyScreen
+      username={username}
+      joinRoomCode={joinRoomCode}
+      error={error}
+      connected={connected}
+      onUsernameChange={setUsername}
+      onJoinRoomCodeChange={(value) => setJoinRoomCode(value.toUpperCase())}
+      onCreateRoom={createRoom}
+      onJoinRoom={joinRoom}
+    />
   );
 }
 
