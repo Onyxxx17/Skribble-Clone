@@ -8,6 +8,7 @@ import WordSelection from './components/WordSelection';
 import PlayerHeader from './components/PlayerHeader';
 import LobbyScreen from './components/LobbyScreen';
 import GamePopup from './components/GamePopup';
+import GameOverScreen from './components/GameOverScreen';
 import type { User } from './types/types';
 
 interface PopupMessage {
@@ -32,6 +33,7 @@ function App() {
   const [currentWord, setCurrentWord] = useState("");
   const [popupMessages, setPopupMessages] = useState<PopupMessage[]>([]);
   const [messageIdCounter, setMessageIdCounter] = useState(1);
+  const [showGameOverScreen, setShowGameOverScreen] = useState(false);
 
   // Function to show popup messages
   const showPopupMessage = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
@@ -106,10 +108,15 @@ function App() {
     socket.on("game_over", () => {
       showPopupMessage("Game Over!", 'info');
       setGameStarted(false);
+      setIsDrawer(false);
+      setCurrentDrawer("");
+      setCurrentWord("");
+
+      setShowGameOverScreen(true);
     })
 
     socket.on("all_correct_guesses" , () => {
-      showPopupMessage("All players guessed correctly! Next round starting...", 'success');
+      showPopupMessage("Moving to next turn...", 'success');
     })
 
     socket.on("turn_ended", () => {
@@ -180,6 +187,21 @@ function App() {
       totalRounds, 
       roundTime 
     });
+  }
+
+  function handlePlayAgain() {
+    // Reset scores and game state for new game
+    setUsers(prev => prev.map(user => ({ ...user, score: 0 })));
+    setShowGameOverScreen(false);
+    // Keep players in room, creator can start new game
+  }
+
+  function handleBackToLobby() {
+    setShowGameOverScreen(false);
+    setUsers([]);
+    setInRoom(false);
+
+    socket.emit('leave_room', roomCode);
   }
 
   if (inRoom) {
@@ -255,6 +277,16 @@ function App() {
           messages={popupMessages} 
           onMessageExpire={handleMessageExpire} 
         />
+        
+        {/* Game Over Screen */}
+        {showGameOverScreen && (
+          <GameOverScreen
+            users={users}
+            currentUsername={username}
+            onPlayAgain={handlePlayAgain}
+            onBackToLobby={handleBackToLobby}
+          />
+        )}
       </div>
     );
   }

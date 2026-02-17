@@ -134,7 +134,7 @@ export class GameManager {
         room.gameState = "game_over";
         io.to(roomCode).emit("game_over");
         room.users.forEach(user => {
-          console.log(user.username, user.score);
+          user.score = 0;
         });
         return;
       }
