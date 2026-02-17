@@ -80,6 +80,14 @@ function App() {
       setCurrentWord("");
     })
 
+    socket.on("game_over", () => {
+      alert("Game Over");
+      setGameStarted(false);
+    })
+
+    socket.on("all_correct_guesses" , () => {
+      alert("All Correct Guesses, going to next round");
+    })
     socket.on('error', (message: string) => {
       setError(message);
     });

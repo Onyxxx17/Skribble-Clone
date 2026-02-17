@@ -46,14 +46,14 @@ export class GameEngine {
     room.roundDuration = roundTime * 1000;
     room.currentRound = 1;
     room.gameState = "playing";
-    room.drawerIndex = this.pickDrawerIndex(room);
+    room.drawerIndex = 0;
     room.resetGuesses();
 
     const currentDrawer = room.users[room.drawerIndex];
     return { room, currentDrawer };
   }
 
-  private pickDrawerIndex(room: Room): number {
-    return Math.floor(Math.random() * room.users.length);
-  }
+  // private pickDrawerIndex(room: Room): number {
+  //   return Math.floor(Math.random() * room.users.length);
+  // }
 }

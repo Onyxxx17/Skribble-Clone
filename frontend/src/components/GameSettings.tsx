@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { ROUND_OPTIONS, TIME_OPTIONS } from "../constants";
+import socket from "../socket";
 
 interface GameSettingsProps {
   totalRounds: number;
@@ -21,6 +23,13 @@ export default function GameSettings({
   const totalMinutes = Math.floor(totalSeconds / 60);
   const remainingSeconds = totalSeconds % 60;
 
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    socket.on("start_error", (error: string) => {
+      setError(error);
+    })
+  }, []);
   return (
     <div className="bg-[#1e293b] border-2 border-[#f59e0b] rounded-lg p-6 mb-4 shadow-xl">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -82,6 +91,21 @@ export default function GameSettings({
         >
           🎮 Start Game
         </button>
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-[#7f1d1d] border border-[#ef4444] rounded-lg p-3 text-sm text-[#ffe4e6] flex gap-3 items-start">
+            <span className="text-lg" aria-hidden>
+              ⚠️
+            </span>
+            <div>
+              <p className="font-semibold uppercase tracking-wide text-xs text-[#fecdd3]/80">
+                Error
+              </p>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
         
         {/* Game Info */}
         <div className="bg-[#0f172a] border border-[#06b6d4] rounded-lg p-4 text-center">

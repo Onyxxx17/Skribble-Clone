@@ -63,6 +63,19 @@ export class RoomManager {
     return null;
   }
 
+  enoughPlayers(room: Room): boolean {
+    return room.users.length >= 2;
+  }
+
+  allCorrectGuesses(room: Room): boolean {
+    const drawer = room.users[room.drawerIndex];
+    for (const user of room.users) {
+      if (user != drawer && !user.correctlyGuessed) {
+        return false;
+      }
+    }
+    return true;
+  }
   private deleteRoom(room: Room): void {
     this.roomsByCode.delete(room.code);
   }

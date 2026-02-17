@@ -41,7 +41,7 @@ function startDrawTimer(roomCode: string, durationMs: number) {
     activeDrawTimers.delete(roomCode);
     console.log("Timer ended")
     advanceTurn(roomCode);
-  }, 30000);
+  }, durationMs);
 
   console.log("Timer started :" + durationMs);
 
@@ -55,7 +55,7 @@ function advanceTurn(roomCode: string) {
 
   console.log(`Advancing turn for room ${roomCode}, current drawer: ${room.users[room.drawerIndex].username}`);
 
-  // Clear any lingering choice timers for all users
+  // Clear anyg choice timers for all users
   room.users.forEach(user => {
     const choiceTimer = activeTurnTimers.get(user.id);
     if (choiceTimer) {
@@ -70,15 +70,15 @@ function advanceTurn(roomCode: string) {
   // Advance drawer index
   room.drawerIndex = (room.drawerIndex + 1) % room.users.length;
   console.log("Next drawer: " + room.users[room.drawerIndex].username);
-  
+
   // Check if round is complete
-  // if (room.drawerIndex === 0 && room.currentRound && room.totalRounds) {
-  //   room.currentRound += 1;
-  //   if (room.currentRound > room.totalRounds) {
-  //     io.to(roomCode).emit("game_over");
-  //     return;
-  //   }
-  // }
+  if (room.drawerIndex === 0 && room.currentRound && room.totalRounds) {
+    room.currentRound += 1;
+    if (room.currentRound > room.totalRounds) {
+      io.to(roomCode).emit("game_over");
+      return;
+    }
+  }
 
   // Clear word and reset guesses for next turn
   room.word = undefined;
@@ -87,8 +87,8 @@ function advanceTurn(roomCode: string) {
   // Emit is_drawer to all users with new drawer
   const newDrawer = room.users[room.drawerIndex];
   room.users.forEach((user) => {
-      console.log(`Sending is_drawer=${user.id === newDrawer.id} to ${user.username}`);
-      io.to(user.id).emit("is_drawer", user.id === newDrawer.id);
+    console.log(`Sending is_drawer=${user.id === newDrawer.id} to ${user.username}`);
+    io.to(user.id).emit("is_drawer", user.id === newDrawer.id);
   });
 }
 
@@ -143,6 +143,12 @@ io.on('connection', (socket) => {
       } else {
         io.to(roomCode).emit("message_sent", chatMessage);
       }
+
+      if (roomManager.allCorrectGuesses(room)) {
+        activeDrawTimers.delete(roomCode);
+        io.to(roomCode).emit("all_correct_guesses");
+        advanceTurn(roomCode);
+      }
     } catch (error) {
       socket.emit("error", (error as Error).message);
     }
@@ -152,6 +158,10 @@ io.on('connection', (socket) => {
     try {
       const { room, currentDrawer } = gameManager.startGame(roomCode, totalRounds, roundTime);
 
+      if (!roomManager.enoughPlayers(room)) {
+        socket.emit("start_error", "Not enough players");
+        return;
+      }
       room.users.forEach((user) => {
         const userSocket = io.sockets.sockets.get(user.id);
         if (userSocket) {
@@ -178,7 +188,7 @@ io.on('connection', (socket) => {
     socket.emit("turn_started", {
       wordChoices
     })
-    
+
     const timerId = setTimeout(() => {
       console.log(`Auto-selecting word for ${socket.id}`);
       activeTurnTimers.delete(socket.id);
@@ -204,7 +214,7 @@ io.on('connection', (socket) => {
 
   socket.on("word_chosen", ({ word, roomCode }) => {
     console.log(`word_chosen received: ${word} from ${socket.id} for room ${roomCode}`);
-    
+
     const timerId = activeTurnTimers.get(socket.id);
 
     if (timerId) {
