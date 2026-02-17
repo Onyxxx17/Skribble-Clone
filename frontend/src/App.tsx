@@ -186,7 +186,12 @@ function App() {
     return (
       <div className="min-h-screen flex flex-col p-4">
         {/* Top Section - Room Info */}
-        <PlayerHeader roomCode={roomCode} users={users} onLeaveRoom={leaveRoom} />
+        <PlayerHeader 
+          roomCode={roomCode} 
+          users={users} 
+          currentUsername={username}
+          onLeaveRoom={leaveRoom} 
+        />
 
         {/* Current Drawer Display */}
         {gameStarted && (
