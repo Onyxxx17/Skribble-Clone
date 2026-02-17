@@ -32,6 +32,7 @@ export default function GamePopup({ messages, onMessageExpire }: GamePopupProps)
           className={`
             min-w-80 max-w-md p-4 rounded-lg shadow-xl border-2 
             transform transition-all duration-300 ease-in-out
+            ${message.type === 'info' ? 'bg-[#151994] border-[#2268b3] text-white' : ''}
             ${message.type === 'success' ? 'bg-[#10b981] border-[#059669] text-white' : ''}
             ${message.type === 'warning' ? 'bg-[#f59e0b] border-[#d97706] text-white' : ''}
             ${message.type === 'error' ? 'bg-[#ef4444] border-[#dc2626] text-white' : ''}

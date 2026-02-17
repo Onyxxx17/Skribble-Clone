@@ -8,6 +8,7 @@ import WordSelection from './components/WordSelection';
 import PlayerHeader from './components/PlayerHeader';
 import LobbyScreen from './components/LobbyScreen';
 import GamePopup from './components/GamePopup';
+import type { User } from './types/types';
 
 interface PopupMessage {
   id: number;
@@ -21,7 +22,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [inRoom, setInRoom] = useState(false);
   const [error, setError] = useState("");
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isCreator, setIsCreator] = useState(false);
   const [totalRounds, setTotalRounds] = useState(1);
   const [roundTime, setRoundTime] = useState(60);
@@ -59,7 +60,7 @@ function App() {
       console.log("Room Created:", res);
       setRoomCode(res.room.code);
       setInRoom(true);
-      setUsers(prev => [...prev,res.username]);
+      setUsers(res.room.users);
       setIsCreator(true);
     });
 
@@ -67,18 +68,19 @@ function App() {
     console.log("Room Joined:", room);
     setRoomCode(room.code);
     setInRoom(true);
-    setUsers(room.users);
+    setUsers(room.users); 
     });
 
-    socket.on('user_joined', (newUsername: string) => {
-      console.log("User joined:", newUsername);
-      setUsers(prev => [...prev, newUsername]);
+    socket.on('user_joined', (newUser: User) => {
+      console.log("User joined:", newUser);
+      setUsers(prev => [...prev, newUser]);
+      showPopupMessage(`${newUser.username} joined the room!`, 'success');
     });
 
     socket.on('user_left', (leftUsername: string) => {
       console.log("User left:", leftUsername);
       showPopupMessage(`${leftUsername} left the room`, 'warning');
-      setUsers(prev => prev.filter(u => u !== leftUsername));
+      setUsers(prev => prev.filter(u => u.username !== leftUsername));
     });
 
     socket.on('game_started', (gameSettings: any) => {
@@ -113,6 +115,16 @@ function App() {
     socket.on("turn_ended", () => {
       showPopupMessage("Time's up! Moving to next turn...", 'info');
     })
+
+    socket.on('score_updated', (updatedUser: User) => {
+      console.log('Score updated for:', updatedUser.username, 'New score:', updatedUser.score);
+      setUsers(prev => prev.map(user => 
+        user.username === updatedUser.username 
+          ? { ...user, score: updatedUser.score }
+          : user
+      ));
+      showPopupMessage(`${updatedUser.username}'s score updated to ${updatedUser.score}`, 'info');
+    });
 
     socket.on('error', (message: string) => {
       setError(message);

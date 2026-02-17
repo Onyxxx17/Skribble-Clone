@@ -51,9 +51,11 @@ io.on('connection', (socket) => {
 
     socket.emit("room_joined", {
       code: roomCode,
-      users: room.users.map(u => u.username)
+      users: room.users.map(u => ({ id: u.id, username: u.username, score: u.score }))
     })
-    socket.to(room.code).emit("user_joined", username);
+    
+    const newUser = room.users.find(u => u.username === username);
+    socket.to(room.code).emit("user_joined", newUser);
   });
 
   socket.on("leave_room", (roomCode: string) => {

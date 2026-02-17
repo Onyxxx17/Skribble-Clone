@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   username: string;
+  score?: number;
 }
 
 export interface ChatMessage {
@@ -25,6 +26,12 @@ export interface Line {
   points: number[];
   color: string;
   strokeWidth: number;
+}
+
+export interface PopupMessage {
+  id: number;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
 }
 
 export type ToolType = "pen" | "eraser";
