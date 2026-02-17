@@ -7,6 +7,13 @@ import GameSettings from './components/GameSettings';
 import WordSelection from './components/WordSelection';
 import PlayerHeader from './components/PlayerHeader';
 import LobbyScreen from './components/LobbyScreen';
+import GamePopup from './components/GamePopup';
+
+interface PopupMessage {
+  id: number;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+}
 function App() {
   const [roomCode, setRoomCode] = useState("");
   const [username, setUsername] = useState("");
@@ -22,6 +29,24 @@ function App() {
   const [isDrawer, setIsDrawer] = useState(false);
   const [currentDrawer, setCurrentDrawer] = useState("");
   const [currentWord, setCurrentWord] = useState("");
+  const [popupMessages, setPopupMessages] = useState<PopupMessage[]>([]);
+  const [messageIdCounter, setMessageIdCounter] = useState(1);
+
+  // Function to show popup messages
+  const showPopupMessage = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+    const newMessage: PopupMessage = {
+      id: messageIdCounter,
+      message,
+      type
+    };
+    setPopupMessages(prev => [...prev, newMessage]);
+    setMessageIdCounter(prev => prev + 1);
+  };
+
+  // Function to remove expired popup messages
+  const handleMessageExpire = (messageId: number) => {
+    setPopupMessages(prev => prev.filter(msg => msg.id !== messageId));
+  };
 
   useEffect(() => {
     socket.connect();
@@ -52,7 +77,7 @@ function App() {
 
     socket.on('user_left', (leftUsername: string) => {
       console.log("User left:", leftUsername);
-      alert(`${leftUsername} left the room`);
+      showPopupMessage(`${leftUsername} left the room`, 'warning');
       setUsers(prev => prev.filter(u => u !== leftUsername));
     });
 
@@ -77,13 +102,18 @@ function App() {
     });
 
     socket.on("game_over", () => {
-      alert("Game Over");
+      showPopupMessage("Game Over!", 'info');
       setGameStarted(false);
     })
 
     socket.on("all_correct_guesses" , () => {
-      alert("All Correct Guesses, going to next round");
+      showPopupMessage("All players guessed correctly! Next round starting...", 'success');
     })
+
+    socket.on("turn_ended", () => {
+      showPopupMessage("Time's up! Moving to next turn...", 'info');
+    })
+
     socket.on('error', (message: string) => {
       setError(message);
     });
@@ -202,6 +232,12 @@ function App() {
             </div>
           </div>
         )}
+        
+        {/* Popup Messages */}
+        <GamePopup 
+          messages={popupMessages} 
+          onMessageExpire={handleMessageExpire} 
+        />
       </div>
     );
   }
