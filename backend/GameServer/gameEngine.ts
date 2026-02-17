@@ -3,6 +3,7 @@ import { Room } from "./Rooms/room.js";
 import { RoomManager } from "./Rooms/roomManager.js";
 import { ChatMessage, Guess } from "../types/types.js";
 import { User } from "./User/user.js";
+import { Server } from "socket.io";
 
 export class GameEngine {
   constructor(private readonly roomManager: RoomManager) { }

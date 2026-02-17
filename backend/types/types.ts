@@ -1,6 +1,6 @@
 import { User } from "../GameServer/User/user.js";
 
-export type GameState = "waiting" | "playing" | "round_end" | "game_end";
+export type GameState = "waiting" | "playing" | "round_end" | "game_over";
 
 export interface ChatMessage {
   id: string;

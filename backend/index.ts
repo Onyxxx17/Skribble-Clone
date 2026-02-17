@@ -22,75 +22,10 @@ app.use(cors());
 const roomManager = new RoomManager();
 const gameEngine = new GameEngine(roomManager);
 const gameManager = new GameManager(roomManager, gameEngine);
-const activeTurnTimers = new Map();
-const activeDrawTimers = new Map();
 
 app.get('/', (_req, res) => {
   res.send('Hello world');
 });
-
-// Helper function to start drawing phase timer
-function startDrawTimer(roomCode: string, durationMs: number) {
-  // Clear any existing timer for this room
-  const existingTimer = activeDrawTimers.get(roomCode);
-  if (existingTimer) {
-    clearTimeout(existingTimer);
-  }
-
-  const timerId = setTimeout(() => {
-    activeDrawTimers.delete(roomCode);
-    console.log("Timer ended")
-    advanceTurn(roomCode);
-  }, durationMs);
-
-  console.log("Timer started :" + durationMs);
-
-  activeDrawTimers.set(roomCode, timerId);
-}
-
-// Helper function to advance to next turn
-function advanceTurn(roomCode: string) {
-  const room = gameManager.getRoomByCode(roomCode);
-  if (!room) return;
-
-  console.log(`Advancing turn for room ${roomCode}, current drawer: ${room.users[room.drawerIndex].username}`);
-
-  // Clear anyg choice timers for all users
-  room.users.forEach(user => {
-    const choiceTimer = activeTurnTimers.get(user.id);
-    if (choiceTimer) {
-      clearTimeout(choiceTimer);
-      activeTurnTimers.delete(user.id);
-    }
-  });
-
-  // Emit turn ended
-  io.to(roomCode).emit("turn_ended");
-
-  // Advance drawer index
-  room.drawerIndex = (room.drawerIndex + 1) % room.users.length;
-  console.log("Next drawer: " + room.users[room.drawerIndex].username);
-
-  // Check if round is complete
-  if (room.drawerIndex === 0 && room.currentRound && room.totalRounds) {
-    room.currentRound += 1;
-    if (room.currentRound > room.totalRounds) {
-      io.to(roomCode).emit("game_over");
-      return;
-    }
-  }
-
-  // Clear word and reset guesses for next turn
-  room.word = undefined;
-  room.resetGuesses();
-
-  // Emit is_drawer to all users with new drawer
-  const newDrawer = room.users[room.drawerIndex];
-  room.users.forEach((user) => {
-    console.log(`Sending is_drawer=${user.id === newDrawer.id} to ${user.username}`);
-    io.to(user.id).emit("is_drawer", user.id === newDrawer.id);
-  });
-}
 
 //Socket.io connection
 io.on('connection', (socket) => {
@@ -145,9 +80,9 @@ io.on('connection', (socket) => {
       }
 
       if (roomManager.allCorrectGuesses(room)) {
-        activeDrawTimers.delete(roomCode);
+        gameManager.stopDrawTimer(roomCode);
         io.to(roomCode).emit("all_correct_guesses");
-        advanceTurn(roomCode);
+        gameManager.advanceTurn(io, roomCode);
       }
     } catch (error) {
       socket.emit("error", (error as Error).message);
@@ -191,7 +126,7 @@ io.on('connection', (socket) => {
 
     const timerId = setTimeout(() => {
       console.log(`Auto-selecting word for ${socket.id}`);
-      activeTurnTimers.delete(socket.id);
+      gameManager.clearTurnTimer(socket.id);
 
       const room: Room | null = gameManager.getRoomByCode(roomCode);
       if (!room) {
@@ -206,22 +141,17 @@ io.on('connection', (socket) => {
 
       // Start drawing timer
       const drawDuration = room.roundDuration || 60000;
-      startDrawTimer(roomCode, drawDuration);
+      gameManager.startDrawTimer(roomCode, drawDuration, io);
     }, 15000);
 
-    activeTurnTimers.set(socket.id, timerId);
+    gameManager.setTurnTimer(socket.id, timerId);
   })
 
   socket.on("word_chosen", ({ word, roomCode }) => {
     console.log(`word_chosen received: ${word} from ${socket.id} for room ${roomCode}`);
 
-    const timerId = activeTurnTimers.get(socket.id);
-
-    if (timerId) {
-      clearTimeout(timerId);
-      activeTurnTimers.delete(socket.id);
-      console.log("Choice timer cleared. Word chosen:", word);
-    }
+    gameManager.clearTurnTimer(socket.id);
+    console.log("Choice timer cleared. Word chosen:", word);
 
     // Save / broadcast the chosen word
     const room: Room | null = gameManager.getRoomByCode(roomCode);
@@ -231,10 +161,10 @@ io.on('connection', (socket) => {
     room?.setWord(word);
     socket.emit("word_finalized", { word });
 
-    // Start 60-second drawing timer
+    // Start drawing timer
     const drawDuration = room.roundDuration || 60000;
     console.log(`Starting draw timer for ${drawDuration}ms`);
-    startDrawTimer(roomCode, drawDuration);
+    gameManager.startDrawTimer(roomCode, drawDuration, io);
   });
 
   socket.on("send_line", ({ line, roomCode, newLine }) => {
