@@ -47,8 +47,13 @@ const Canva = ({ isDrawer, roomId }: CanvaProps) => {
       });
     });
 
+    socket.on("turn_ended", () => {
+      setLines([]);
+    });
+
     return () => {
       socket.off("clear_canvas");
+      socket.off("turn_ended");
       socket.off("receive_line");
     };
   }, []);

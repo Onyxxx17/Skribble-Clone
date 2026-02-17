@@ -76,10 +76,6 @@ function App() {
       setCurrentWord(word);
     });
 
-    socket.on("turn_ended", ()=> {
-      setCurrentWord("");
-    })
-
     socket.on("game_over", () => {
       alert("Game Over");
       setGameStarted(false);
