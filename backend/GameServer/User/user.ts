@@ -1,6 +1,7 @@
 export class User {
   id: string;
   username: string;
+  score: number = 0;
   correctlyGuessed: boolean;
 
   constructor(id: string, username: string) {

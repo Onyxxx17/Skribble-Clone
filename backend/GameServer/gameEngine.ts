@@ -3,8 +3,6 @@ import { Room } from "./Rooms/room.js";
 import { RoomManager } from "./Rooms/roomManager.js";
 import { ChatMessage, Guess } from "../types/types.js";
 import { User } from "./User/user.js";
-import { Server } from "socket.io";
-
 export class GameEngine {
   constructor(private readonly roomManager: RoomManager) { }
 
@@ -53,8 +51,21 @@ export class GameEngine {
     const currentDrawer = room.users[room.drawerIndex];
     return { room, currentDrawer };
   }
+  calculateScore(roomCode: string, socketId: string, timeElpased: number): number {
+    const room = this.roomManager.getRoomByCode(roomCode);
+    console.log(room);
+    if (!room || !room.roundDuration) return 0;
 
-  // private pickDrawerIndex(room: Room): number {
-  //   return Math.floor(Math.random() * room.users.length);
-  // }
+    const user = room.findUser(socketId);
+    console.log(user);
+    if (!user) return 0;
+
+    const reduceScorePerSecond = 900 / (room.roundDuration / 1000);
+
+    const rawScore = 1000 - (timeElpased * reduceScorePerSecond);
+
+    // Clamp between 100 and 1000
+    console.log(rawScore);
+    return Math.max(99, Math.min(1000, Math.ceil(rawScore)));
+  }
 }

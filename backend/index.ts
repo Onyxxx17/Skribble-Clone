@@ -71,6 +71,9 @@ io.on('connection', (socket) => {
 
       if (guess.isCorrectGuess && isFirstCorrect) {
         io.to(roomCode).emit("guess", guess);
+        user.score += gameEngine.calculateScore(roomCode,socket.id,gameManager.getTimeElapsed(roomCode));
+        io.to(roomCode).emit("score_updated", user);
+        console.log(user.username + " gets " + user.score + " points");
       }
 
       if (guess.isCorrectGuess || user.correctlyGuessed) {

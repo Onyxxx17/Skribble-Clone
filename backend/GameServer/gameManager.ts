@@ -16,6 +16,7 @@ interface ChatResult {
 export class GameManager {
   private activeTurnTimers = new Map<string, NodeJS.Timeout>();
   private activeDrawTimers = new Map<string, NodeJS.Timeout>();
+  private drawTimerData = new Map<string, number>();
 
   constructor(
     private readonly roomManager: RoomManager,
@@ -78,6 +79,7 @@ export class GameManager {
 
     console.log("Timer started :" + durationMs);
     this.activeDrawTimers.set(roomCode, timerId);
+    this.drawTimerData.set(roomCode, Date.now());
   }
 
   setTurnTimer(socketId: string, timerId: NodeJS.Timeout) {
@@ -90,6 +92,15 @@ export class GameManager {
       clearTimeout(timerId);
       this.activeTurnTimers.delete(socketId);
     }
+  }
+
+  getTimeElapsed(roomCode: string): number {
+    const timerData = this.drawTimerData.get(roomCode);
+    if (!timerData) return 0;
+
+    const elapsed = Date.now() - timerData;
+    console.log(`Time elapsed: ${elapsed / 1000} seconds`);
+    return Math.ceil(elapsed / 1000); // Return seconds
   }
 
   advanceTurn(io: Server, roomCode: string) {
@@ -122,6 +133,9 @@ export class GameManager {
       if (room.currentRound > room.totalRounds) {
         room.gameState = "game_over";
         io.to(roomCode).emit("game_over");
+        room.users.forEach(user => {
+          console.log(user.username, user.score);
+        });
         return;
       }
     }
