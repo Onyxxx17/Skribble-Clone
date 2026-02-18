@@ -1,0 +1,28 @@
+# Version control
+.git
+.github
+.gitignore
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+coverage
+
+# Environment and development files
+.env
+.env.*
+.vscode
+*.log
+npm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Docker-specific files (if not needed in the final image)
+Dockerfile
+docker-compose*.yml
+*.md
