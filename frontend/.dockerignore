@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+dist
+build
+
+# Configuration/editor files
+.env
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose*
+
+# Local development/OS files
+npm-debug.log
+**/.git
+**/.DS_Store
+**/.vscode
+**/.idea
+coverage*
