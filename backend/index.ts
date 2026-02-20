@@ -6,7 +6,6 @@ import { GameEngine } from "./GameServer/gameEngine.js";
 import { GameManager } from "./GameServer/gameManager.js";
 import { RoomManager } from "./GameServer/Rooms/roomManager.js";
 import { Room } from "./GameServer/Rooms/room.js";
-import { error } from "console";
 
 const app = express();
 const server = createServer(app);
@@ -27,6 +26,7 @@ app.get('/', (_req, res) => {
   res.send('Hello world');
 });
 
+app.get('/health', (req, res) => res.sendStatus(200));
 //Socket.io connection
 io.on('connection', (socket) => {
   console.log('a user connected');
