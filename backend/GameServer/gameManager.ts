@@ -56,8 +56,8 @@ export class GameManager {
     return { room, user, chatMessage, guess, isFirstCorrect };
   }
 
-  startGame(roomCode: string, totalRounds: number, roundTime: number): { room: Room; currentDrawer: User } {
-    return this.gameEngine.startGame(roomCode, totalRounds, roundTime);
+  startGame(roomCode: string, totalRounds: number, roundTime: number, category: string = "Random"): { room: Room; currentDrawer: User } {
+    return this.gameEngine.startGame(roomCode, totalRounds, roundTime, category);
   }
 
   stopDrawTimer(roomCode: string) {
@@ -68,15 +68,13 @@ export class GameManager {
   }
 
   startDrawTimer(roomCode: string, durationMs: number, io: Server) {
-    // Clear any existing timer for this room
+    // Clear any existing timer 
     this.stopDrawTimer(roomCode);
 
     const timerId = setTimeout(() => {
       this.activeDrawTimers.delete(roomCode);
       console.log("Timer ended");
-      
-       // Emit turn ended
-      io.to(roomCode).emit("turn_ended");
+    
       this.advanceTurn(io, roomCode);
     }, durationMs);
 
@@ -110,11 +108,13 @@ export class GameManager {
     const room = this.roomManager.getRoomByCode(roomCode);
     if (!room) return;
 
+    io.to(roomCode).emit("turn_ended");
+
     this.stopDrawTimer(roomCode);
 
     console.log(`Advancing turn for room ${roomCode}, current drawer: ${room.users[room.drawerIndex].username}`);
 
-    // Clear any choice timers for all users
+    // Clear any choice timers
     room.users.forEach(user => {
       const choiceTimer = this.activeTurnTimers.get(user.id);
       if (choiceTimer) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ROUND_OPTIONS, TIME_OPTIONS } from "../constants";
+import { ROUND_OPTIONS, TIME_OPTIONS, WORD_CATEGORY_NAMES, CATEGORY_EMOJIS, type WordCategory } from "../constants";
 import socket from "../socket";
 
 interface GameSettingsProps {
@@ -8,6 +8,8 @@ interface GameSettingsProps {
   roundTime: number;
   setRoundTime: (time: number) => void;
   numPlayers: number;
+  category: string;
+  setCategory: (category: string) => void;
   onStartGame: () => void;
 }
 
@@ -17,6 +19,8 @@ export default function GameSettings({
   roundTime,
   setRoundTime,
   numPlayers,
+  category,
+  setCategory,
   onStartGame,
 }: GameSettingsProps) {
   const totalSeconds = totalRounds * roundTime * numPlayers;
@@ -57,6 +61,28 @@ export default function GameSettings({
                 }`}
               >
                 {rounds}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Word Category */}
+        <div>
+          <label className="block text-sm font-semibold text-[#06b6d4] mb-3">
+            Word Category
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {WORD_CATEGORY_NAMES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`arcade-button py-2 px-3 text-xs ${
+                  category === cat
+                    ? 'bg-[#8b5cf6] border-[#8b5cf6] text-white font-bold'
+                    : 'bg-[#0f172a] border-[#06b6d4] text-[#06b6d4] hover:bg-[#1e293b]'
+                }`}
+              >
+                {CATEGORY_EMOJIS[cat as WordCategory]} {cat}
               </button>
             ))}
           </div>

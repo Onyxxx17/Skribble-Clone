@@ -9,7 +9,6 @@ RUN npm install
 COPY . .
 
 ENV PORT=3001
-ENV CLIENT_URL=http://localhost:80
 
 EXPOSE 3001
 

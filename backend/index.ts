@@ -6,6 +6,7 @@ import { GameEngine } from "./GameServer/gameEngine.js";
 import { GameManager } from "./GameServer/gameManager.js";
 import { RoomManager } from "./GameServer/Rooms/roomManager.js";
 import { Room } from "./GameServer/Rooms/room.js";
+import { pickRandomWords } from "./GameServer/words.js";
 import 'dotenv/config';
 
 const app = express();
@@ -14,7 +15,8 @@ const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"]
-  }
+  },
+  path: "/socket"
 });
 
 app.use(cors());
@@ -95,9 +97,9 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on("start_game", ({ roomCode, totalRounds, roundTime }) => {
+  socket.on("start_game", ({ roomCode, totalRounds, roundTime, category }) => {
     try {
-      const { room, currentDrawer } = gameManager.startGame(roomCode, totalRounds, roundTime);
+      const { room, currentDrawer } = gameManager.startGame(roomCode, totalRounds, roundTime, category ?? "Random");
 
       if (!roomManager.enoughPlayers(room)) {
         socket.emit("start_error", "Not enough players");
@@ -124,7 +126,9 @@ io.on('connection', (socket) => {
   socket.on("start_turn", (drawer, roomCode) => {
     console.log(`start_turn received from socket ${socket.id} for room ${roomCode}`);
 
-    const wordChoices: Array<string> = ['Banana', 'Apple', 'Cherry'];
+    const room: Room | null = gameManager.getRoomByCode(roomCode);
+    const category = room?.category ?? "Random";
+    const wordChoices: Array<string> = pickRandomWords(category, 3);
 
     socket.emit("turn_started", {
       wordChoices
@@ -134,19 +138,19 @@ io.on('connection', (socket) => {
       console.log(`Auto-selecting word for ${socket.id}`);
       gameManager.clearTurnTimer(socket.id);
 
-      const room: Room | null = gameManager.getRoomByCode(roomCode);
-      if (!room) {
+      const currentRoom: Room | null = gameManager.getRoomByCode(roomCode);
+      if (!currentRoom) {
         return socket.emit("error", { message: "Room not found" });
       }
 
       const word: string = wordChoices[Math.floor(Math.random() * wordChoices.length)];
-      room?.setWord(word);
+      currentRoom?.setWord(word);
       socket.emit("word_finalized", {
         word
       })
 
       // Start drawing timer
-      const drawDuration = room.roundDuration || 60000;
+      const drawDuration = currentRoom.roundDuration || 60000;
       gameManager.startDrawTimer(roomCode, drawDuration, io);
     }, 15000);
 

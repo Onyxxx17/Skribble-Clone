@@ -14,6 +14,7 @@ export class Room {
   currentRound?: number;
   gameState: GameState;
   roundDuration?: number;
+  category?: string;
 
   constructor(code: string, creator: User) {
     this.id = uuidv4();

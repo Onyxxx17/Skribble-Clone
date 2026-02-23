@@ -35,7 +35,7 @@ export class GameEngine {
     return { user, isCorrectGuess };
   }
 
-  startGame(roomCode: string, totalRounds: number, roundTime: number): { room: Room; currentDrawer: User } {
+  startGame(roomCode: string, totalRounds: number, roundTime: number, category: string = "Random"): { room: Room; currentDrawer: User } {
     const room = this.roomManager.getRoomByCode(roomCode);
     if (!room) {
       throw new Error("Room not found");
@@ -46,6 +46,7 @@ export class GameEngine {
     room.currentRound = 1;
     room.gameState = "playing";
     room.drawerIndex = 0;
+    room.category = category;
     room.resetGuesses();
 
     const currentDrawer = room.users[room.drawerIndex];

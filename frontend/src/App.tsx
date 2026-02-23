@@ -27,6 +27,7 @@ function App() {
   const [isCreator, setIsCreator] = useState(false);
   const [totalRounds, setTotalRounds] = useState(1);
   const [roundTime, setRoundTime] = useState(60);
+  const [category, setCategory] = useState("Random");
   const [gameStarted, setGameStarted] = useState(false);
   const [isDrawer, setIsDrawer] = useState(false);
   const [currentDrawer, setCurrentDrawer] = useState("");
@@ -185,7 +186,8 @@ function App() {
     socket.emit('start_game', { 
       roomCode, 
       totalRounds, 
-      roundTime 
+      roundTime,
+      category
     });
   }
 
@@ -237,6 +239,8 @@ function App() {
             roundTime={roundTime}
             setRoundTime={setRoundTime}
             numPlayers={users.length}
+            category={category}
+            setCategory={setCategory}
             onStartGame={startGame}
           />
         )}

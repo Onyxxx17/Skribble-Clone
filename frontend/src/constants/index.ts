@@ -85,3 +85,25 @@ export const CANVAS_CONFIG = {
   placeholderSize: 14,
   placeholderColor: "#999999",
 } as const;
+
+export const WORD_CATEGORY_NAMES = [
+  "Random",
+  "Animals",
+  "Food",
+  "Sports",
+  "Movies",
+  "Nature",
+  "Technology",
+] as const;
+
+export type WordCategory = typeof WORD_CATEGORY_NAMES[number];
+
+export const CATEGORY_EMOJIS: Record<WordCategory, string> = {
+  Random: "🎲",
+  Animals: "🐾",
+  Food: "🍕",
+  Sports: "⚽",
+  Movies: "🎬",
+  Nature: "🌿",
+  Technology: "💻",
+};
