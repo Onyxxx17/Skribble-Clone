@@ -74,6 +74,9 @@ export class GameManager {
     const timerId = setTimeout(() => {
       this.activeDrawTimers.delete(roomCode);
       console.log("Timer ended");
+      
+       // Emit turn ended
+      io.to(roomCode).emit("turn_ended");
       this.advanceTurn(io, roomCode);
     }, durationMs);
 
@@ -119,9 +122,6 @@ export class GameManager {
         this.activeTurnTimers.delete(user.id);
       }
     });
-
-    // Emit turn ended
-    io.to(roomCode).emit("turn_ended");
 
     // Advance drawer index
     room.drawerIndex = (room.drawerIndex + 1) % room.users.length;

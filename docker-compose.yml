@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=${PORT:-3001}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:80}
+    networks:
+      - my-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - my-net
+
+networks:
+  my-net:
+    driver: bridge

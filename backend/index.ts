@@ -6,12 +6,13 @@ import { GameEngine } from "./GameServer/gameEngine.js";
 import { GameManager } from "./GameServer/gameManager.js";
 import { RoomManager } from "./GameServer/Rooms/roomManager.js";
 import { Room } from "./GameServer/Rooms/room.js";
+import 'dotenv/config';
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
@@ -190,6 +191,6 @@ io.on('connection', (socket) => {
 });
 
 
-server.listen(3001, () => {
+server.listen(3001, "0.0.0.0", () => {
   console.log("Server started on port 3001");
 });
