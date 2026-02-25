@@ -43,7 +43,7 @@ export const DEFAULT_GAME_SETTINGS = {
 } as const;
 
 // ============================================
-// UI THEME COLORS (for consistency across components)
+// UI THEME COLOR
 // ============================================
 
 export const THEME_COLORS = {
@@ -106,4 +106,14 @@ export const CATEGORY_EMOJIS: Record<WordCategory, string> = {
   Movies: "🎬",
   Nature: "🌿",
   Technology: "💻",
+};
+
+export const CATEGORY_COLORS: Record<WordCategory, { bg: string; border: string; text: string }> = {
+  Random:     { bg: "#1e1b4b", border: "#818cf8", text: "#818cf8" },
+  Animals:    { bg: "#1a2e1a", border: "#4ade80", text: "#4ade80" },
+  Food:       { bg: "#2d1a0e", border: "#fb923c", text: "#fb923c" },
+  Sports:     { bg: "#0c1a2e", border: "#38bdf8", text: "#38bdf8" },
+  Movies:     { bg: "#1f0a2e", border: "#c084fc", text: "#c084fc" },
+  Nature:     { bg: "#0d2318", border: "#34d399", text: "#34d399" },
+  Technology: { bg: "#0a1a2e", border: "#60a5fa", text: "#60a5fa" },
 };

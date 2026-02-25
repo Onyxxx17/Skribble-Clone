@@ -208,7 +208,7 @@ function App() {
 
   if (inRoom) {
     return (
-      <div className="min-h-screen flex flex-col p-4">
+      <div className="min-h-screen flex flex-col p-2 sm:p-4">
         {/* Top Section - Room Info */}
         <PlayerHeader 
           roomCode={roomCode} 
@@ -250,16 +250,16 @@ function App() {
 
         {/* Canvas and Chat Side by Side */}
         {gameStarted && (
-          <div className="flex flex-col lg:flex-row gap-4 flex-1">
+          <div className="flex flex-col md:flex-row gap-4 flex-1">
             {/* Canvas Section */}
-            <div className="flex-1 lg:w-2/3">
+            <div className="flex-1 md:w-2/3 min-w-0">
               {(() => {
                 console.log('Render check - isDrawer:', isDrawer, 'currentWord:', currentWord);
                 return isDrawer && currentWord && (
-                  <div className="bg-[#10b981] border-2 border-[#059669] rounded-lg p-4 mb-4 shadow-xl">
+                  <div className="bg-[#10b981] border-2 border-[#059669] rounded-lg p-3 mb-4 shadow-xl">
                     <div className="text-center">
-                      <p className="text-sm text-white mb-1 font-semibold">Your Word</p>
-                      <p className="text-3xl font-bold text-white tracking-wider">{currentWord}</p>
+                      <p className="text-xs text-white mb-0.5 font-semibold uppercase tracking-wide">Your Word</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-white tracking-wider">{currentWord}</p>
                     </div>
                   </div>
                 );
@@ -268,7 +268,7 @@ function App() {
             </div>
             
             {/* Chat Section */}
-            <div className="flex flex-col lg:w-1/3 min-h-125 lg:min-h-0">
+            <div className="flex flex-col md:w-1/3 h-72 sm:h-80 md:h-auto md:flex-1">
               <div className="flex-1 flex flex-col bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg overflow-hidden shadow-xl">
                 <Chat roomId={roomCode} username={username} isDrawer={isDrawer} />
               </div>

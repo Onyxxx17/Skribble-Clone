@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ROUND_OPTIONS, TIME_OPTIONS, WORD_CATEGORY_NAMES, CATEGORY_EMOJIS, type WordCategory } from "../constants";
+import { ROUND_OPTIONS, TIME_OPTIONS, WORD_CATEGORY_NAMES, CATEGORY_EMOJIS, CATEGORY_COLORS, type WordCategory } from "../constants";
 import socket from "../socket";
 
 interface GameSettingsProps {
@@ -35,7 +35,7 @@ export default function GameSettings({
     })
   }, []);
   return (
-    <div className="bg-[#1e293b] border-2 border-[#f59e0b] rounded-lg p-6 mb-4 shadow-xl">
+    <div className="bg-[#1e293b] border-2 border-[#f59e0b] rounded-lg p-4 sm:p-6 mb-4 shadow-xl">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h2 className="text-xl font-bold text-[#f59e0b]">Game Settings</h2>
         <span className="bg-[#10b981] text-white text-xs px-3 py-1 rounded-full font-semibold">
@@ -71,20 +71,39 @@ export default function GameSettings({
           <label className="block text-sm font-semibold text-[#06b6d4] mb-3">
             Word Category
           </label>
-          <div className="grid grid-cols-3 gap-2">
-            {WORD_CATEGORY_NAMES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`arcade-button py-2 px-3 text-xs ${
-                  category === cat
-                    ? 'bg-[#8b5cf6] border-[#8b5cf6] text-white font-bold'
-                    : 'bg-[#0f172a] border-[#06b6d4] text-[#06b6d4] hover:bg-[#1e293b]'
-                }`}
-              >
-                {CATEGORY_EMOJIS[cat as WordCategory]} {cat}
-              </button>
-            ))}
+          <div className="grid grid-cols-4 gap-2">
+            {WORD_CATEGORY_NAMES.map((cat) => {
+              const colors = CATEGORY_COLORS[cat as WordCategory];
+              const isSelected = category === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  style={isSelected ? {
+                    backgroundColor: colors.bg,
+                    borderColor: colors.border,
+                    boxShadow: `0 0 10px ${colors.border}55`,
+                  } : {}}
+                  className={`group flex flex-col items-center gap-1 py-3 px-2 rounded-lg border-2 transition-all duration-150 ${
+                    isSelected
+                      ? "scale-[1.04]"
+                      : "bg-[#0f172a] border-[#1e293b] hover:border-[#334155] hover:bg-[#1e293b]"
+                  }`}
+                >
+                  <span className="text-xl leading-none">
+                    {CATEGORY_EMOJIS[cat as WordCategory]}
+                  </span>
+                  <span
+                    style={isSelected ? { color: colors.text } : {}}
+                    className={`text-[10px] font-semibold tracking-wide leading-none ${
+                      isSelected ? "" : "text-[#64748b] group-hover:text-[#94a3b8]"
+                    }`}
+                  >
+                    {cat}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

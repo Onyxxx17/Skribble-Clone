@@ -6,9 +6,17 @@ interface WordSelectionProps {
   isDrawer: boolean;
 }
 
+const TOTAL_TIME = 15;
+
+const WORD_COLORS = [
+  { border: '#ec4899', glow: '#ec489940', text: '#ec4899', bg: '#2d0a1a' },
+  { border: '#f59e0b', glow: '#f59e0b40', text: '#f59e0b', bg: '#2d1a00' },
+  { border: '#06b6d4', glow: '#06b6d440', text: '#06b6d4', bg: '#001a2d' },
+];
+
 const WordSelection = ({ roomCode, isDrawer }: WordSelectionProps) => {
   const [wordChoices, setWordChoices] = useState<string[]>([]);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(TOTAL_TIME);
   const [showSelection, setShowSelection] = useState(false);
 
   useEffect(() => {
@@ -19,7 +27,7 @@ const WordSelection = ({ roomCode, isDrawer }: WordSelectionProps) => {
 
     socket.on('turn_started', ({ wordChoices }: { wordChoices: string[] }) => {
       setWordChoices(wordChoices);
-      setTimeLeft(15);
+      setTimeLeft(TOTAL_TIME);
       setShowSelection(true);
     });
 
@@ -56,61 +64,82 @@ const WordSelection = ({ roomCode, isDrawer }: WordSelectionProps) => {
 
   if (!showSelection || !isDrawer) return null;
 
+  const pct = (timeLeft / TOTAL_TIME) * 100;
+  const barColor = timeLeft <= 5 ? '#ef4444' : timeLeft <= 9 ? '#f59e0b' : '#10b981';
+  const timerColor = timeLeft <= 5 ? 'text-red-400' : timeLeft <= 9 ? 'text-yellow-400' : 'text-emerald-400';
+
   return (
-    <div style={{
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      backgroundColor: 'white',
-      padding: '2rem',
-      borderRadius: '12px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-      zIndex: 1000,
-      minWidth: '400px',
-      textAlign: 'center'
-    }}>
-      <h2 style={{ marginBottom: '1rem', color: '#333' }}>Choose a Word</h2>
-      <div style={{
-        fontSize: '2rem',
-        fontWeight: 'bold',
-        color: timeLeft <= 5 ? '#e74c3c' : '#2ecc71',
-        marginBottom: '1.5rem'
-      }}>
-        {timeLeft}s
-      </div>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        {wordChoices.map((word, index) => (
-          <button
-            key={index}
-            onClick={() => handleWordChoice(word)}
-            style={{
-              padding: '1rem 2rem',
-              fontSize: '1.2rem',
-              fontWeight: '600',
-              backgroundColor: '#3498db',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#2980b9';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#3498db';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            {word}
-          </button>
-        ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+      <div className="relative bg-[#0f172a] border-2 border-[#1e293b] rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
+
+        {/* header */}
+        <div className="text-center mb-6">
+          <p className="text-[#64748b] text-xs font-semibold uppercase tracking-widest mb-1">
+            ✏️ Your turn to draw
+          </p>
+          <h2 className="text-2xl font-bold text-white">Pick a word</h2>
+        </div>
+
+        {/* timer bar */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[#475569] text-xs">Time to choose</span>
+            <span className={`text-xl font-bold font-mono ${timerColor}`}>
+              {timeLeft}s
+            </span>
+          </div>
+          <div className="h-2 bg-[#1e293b] rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-1000"
+              style={{ width: `${pct}%`, backgroundColor: barColor }}
+            />
+          </div>
+        </div>
+
+        {/* word cards */}
+        <div className="flex flex-col gap-3">
+          {wordChoices.map((word, i) => {
+            const c = WORD_COLORS[i % WORD_COLORS.length];
+            return (
+              <button
+                key={word}
+                onClick={() => handleWordChoice(word)}
+                style={{
+                  backgroundColor: c.bg,
+                  borderColor: c.border,
+                  boxShadow: `0 0 0 0 ${c.glow}`,
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 18px 2px ${c.glow}`;
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 0 0 ${c.glow}`;
+                }}
+                className="group w-full flex items-center justify-between border-2 rounded-xl px-5 py-4 transition-transform duration-100 active:scale-[0.98] hover:scale-[1.02] cursor-pointer"
+              >
+                <span className="text-[#475569] text-xs font-mono font-bold w-5">
+                  {i + 1}
+                </span>
+                <span
+                  className="flex-1 text-center text-lg font-bold tracking-wide"
+                  style={{ color: c.text }}
+                >
+                  {word}
+                </span>
+                <span className="text-[#475569] text-xs w-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+                  →
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-center text-[#334155] text-xs mt-5">
+          A word will be auto-selected if you don't choose in time
+        </p>
       </div>
     </div>
   );
