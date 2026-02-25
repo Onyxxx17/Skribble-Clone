@@ -20,9 +20,18 @@ export class RoomManager {
   joinRoom(code: string, username: string, socketId: string): Room | null {
     const room = this.roomsByCode.get(code);
     if (!room) return null;
-    const user = new User(socketId, username);
+    const uniqueName = this.resolveUniqueName(room, username);
+    const user = new User(socketId, uniqueName);
     room.addUser(user);
     return room;
+  }
+
+  private resolveUniqueName(room: Room, username: string): string {
+    const existing = new Set(room.users.map(u => u.username));
+    if (!existing.has(username)) return username;
+    let counter = 2;
+    while (existing.has(`${username}(${counter})`)) counter++;
+    return `${username}(${counter})`;
   }
 
   removeUserFromRoom(socketId: string, roomCode?: string): { room: Room; user: User } | null {

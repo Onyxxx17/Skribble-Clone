@@ -71,7 +71,8 @@ function App() {
     console.log("Room Joined:", room);
     setRoomCode(room.code);
     setInRoom(true);
-    setUsers(room.users); 
+    setUsers(room.users);
+    if (room.username) setUsername(room.username);
     });
 
     socket.on('user_joined', (newUser: User) => {

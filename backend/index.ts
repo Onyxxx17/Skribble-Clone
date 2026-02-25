@@ -52,12 +52,14 @@ io.on('connection', (socket) => {
     }
     socket.join(room.code);
 
+    const newUser = room.findUser(socket.id);
+
     socket.emit("room_joined", {
       code: roomCode,
+      username: newUser?.username,
       users: room.users.map(u => ({ id: u.id, username: u.username, score: u.score }))
     })
     
-    const newUser = room.users.find(u => u.username === username);
     socket.to(room.code).emit("user_joined", newUser);
   });
 
