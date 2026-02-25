@@ -29,61 +29,27 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ users, currentUsername }) => 
   };
 
   return (
-    <div className="bg-[#0f172a] border border-[#06b6d4] rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-[#10b981] text-sm font-semibold flex items-center gap-2">
-          <span>🏆</span>
-          Leaderboard
-        </p>
-        <span className="text-[#cbd5e1] text-xs">
-          {users.length} player{users.length !== 1 ? 's' : ''}
-        </span>
-      </div>
-      
-      <div className="space-y-2">
-        {sortedUsers.map((user, index) => {
-          const rank = index + 1;
-          const isCurrentUser = user.username === currentUsername;
-          
-          return (
-            <div
-              key={user.username || index}
-              className={`
-                flex items-center justify-between p-3 rounded-lg border transition-all duration-200
-                ${getRankColor(rank)}
-                ${isCurrentUser ? 'ring-2 ring-[#ec4899] ring-opacity-50' : ''}
-              `}
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-8 h-8 font-bold text-sm">
-                  {getRankIcon(rank)}
-                </div>
-                <div>
-                  <p className={`font-semibold text-sm ${isCurrentUser ? 'text-[#ec4899]' : ''}`}>
-                    {user.username}
-                    {isCurrentUser && (
-                      <span className="ml-2 text-xs opacity-75">(You)</span>
-                    )}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold">
-                  {user.score || 0}
-                </span>
-                <span className="text-xs opacity-75">pts</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      
-      {sortedUsers.length === 0 && (
-        <p className="text-center text-[#64748b] text-sm py-4">
-          No players yet
-        </p>
-      )}
+    <div className="flex flex-wrap items-center gap-1.5">
+      {sortedUsers.map((user, index) => {
+        const rank = index + 1;
+        const isCurrentUser = user.username === currentUsername;
+
+        return (
+          <div
+            key={user.username || index}
+            className={`
+              flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold
+              ${getRankColor(rank)}
+              ${isCurrentUser ? 'ring-2 ring-[#ec4899] ring-opacity-60' : ''}
+            `}
+          >
+            <span>{getRankIcon(rank)}</span>
+            <span className={isCurrentUser ? 'text-[#ec4899]' : ''}>{user.username}</span>
+            <span className="opacity-60">·</span>
+            <span>{user.score || 0}pts</span>
+          </div>
+        );
+      })}
     </div>
   );
 };

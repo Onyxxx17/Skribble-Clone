@@ -191,6 +191,10 @@ io.on('connection', (socket) => {
       console.log(`${result.user.username} disconnected from ${result.room.code}`);
       socket.to(result.room.code).emit("user_left", result.user.username);
     }
+
+    if (result?.room?.users.length == 1 ){
+      gameManager.gameOver(result.room, io)
+    }
   });
 });
 

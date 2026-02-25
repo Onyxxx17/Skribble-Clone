@@ -21,8 +21,8 @@ export class GameManager {
   constructor(
     private readonly roomManager: RoomManager,
     private readonly gameEngine: GameEngine,
-    
-  ) {}
+
+  ) { }
 
   createRoom(username: string, socketId: string): Room {
     return this.roomManager.createRoom(username, socketId);
@@ -74,7 +74,7 @@ export class GameManager {
     const timerId = setTimeout(() => {
       this.activeDrawTimers.delete(roomCode);
       console.log("Timer ended");
-    
+
       this.advanceTurn(io, roomCode);
     }, durationMs);
 
@@ -129,16 +129,8 @@ export class GameManager {
 
     // Check if round is complete
     if (room.drawerIndex === 0 && room.currentRound && room.totalRounds) {
-      room.currentRound += 1;
-      if (room.currentRound > room.totalRounds) {
-        room.gameState = "game_over";
-        io.to(roomCode).emit("game_over");
-        room.users.forEach(user => {
-          user.score = 0;
-        });
-        return;
+      this.gameOver(room,io)
       }
-    }
 
     // Clear word and reset guesses for next turn
     room.word = undefined;
@@ -150,5 +142,17 @@ export class GameManager {
       console.log(`Sending is_drawer=${user.id === newDrawer.id} to ${user.username}`);
       io.to(user.id).emit("is_drawer", user.id === newDrawer.id);
     });
+  }
+
+ gameOver(room: Room, io: Server) {
+
+    if (room) {
+      room.gameState = "game_over";
+      io.to(room.code).emit("game_over");
+      room.users.forEach(user => {
+        user.score = 0;
+      });
+      return;
+    }
   }
 }

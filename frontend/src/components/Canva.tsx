@@ -27,13 +27,13 @@ const Canva = ({ isDrawer, roomId }: CanvaProps) => {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const w = Math.floor(entry.contentRect.width);
-        setStageSize({ width: w, height: Math.round(w * 0.6) });
+        if (w > 0) setStageSize({ width: w, height: Math.max(360, Math.round(w * 0.65)) });
       }
     });
     if (containerRef.current) {
       observer.observe(containerRef.current);
       const w = Math.floor(containerRef.current.getBoundingClientRect().width);
-      setStageSize({ width: w, height: Math.round(w * 0.6) });
+      if (w > 0) setStageSize({ width: w, height: Math.max(360, Math.round(w * 0.65)) });
     }
     return () => observer.disconnect();
   }, []);

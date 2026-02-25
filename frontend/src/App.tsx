@@ -219,14 +219,11 @@ function App() {
 
         {/* Current Drawer Display */}
         {gameStarted && (
-          <div className="bg-[#273c5f] border border-[#000000] rounded-lg p-4 mb-4 shadow-xl">
-            <div className="text-center">
-              <p className="text-sm text-[#fef3c7] mb-1 font-semibold">Current Artist</p>
-              <p className="text-2xl font-bold text-white">🎨 {currentDrawer} 🎨 </p>
-              {isDrawer && (
-                <p className="text-sm mt-2 bg-[#10b981] text-white px-4 py-1.5 rounded-full inline-block font-semibold">That's you! Start drawing!</p>
-              )}
-            </div>
+          <div className="bg-[#273c5f] border border-[#000000] rounded-lg px-4 py-2 mb-3 shadow-xl flex items-center justify-center gap-3">
+            <p className="text-sm text-[#fef3c7] font-semibold">🎨 {currentDrawer} is drawing</p>
+            {isDrawer && (
+              <span className="text-xs bg-[#10b981] text-white px-3 py-1 rounded-full font-semibold">That's you!</span>
+            )}
           </div>
         )}
 
@@ -250,17 +247,15 @@ function App() {
 
         {/* Canvas and Chat Side by Side */}
         {gameStarted && (
-          <div className="flex flex-col md:flex-row gap-4 flex-1">
+          <div className="flex flex-col md:flex-row gap-4">
             {/* Canvas Section */}
-            <div className="flex-1 md:w-2/3 min-w-0">
+            <div className="flex-1 md:flex-[3] min-w-0">
               {(() => {
                 console.log('Render check - isDrawer:', isDrawer, 'currentWord:', currentWord);
                 return isDrawer && currentWord && (
-                  <div className="bg-[#10b981] border-2 border-[#059669] rounded-lg p-3 mb-4 shadow-xl">
-                    <div className="text-center">
-                      <p className="text-xs text-white mb-0.5 font-semibold uppercase tracking-wide">Your Word</p>
-                      <p className="text-2xl sm:text-3xl font-bold text-white tracking-wider">{currentWord}</p>
-                    </div>
+                  <div className="bg-[#10b981] border-2 border-[#059669] rounded-lg px-3 py-1.5 mb-2 shadow-xl flex items-center justify-center gap-2">
+                    <p className="text-xs text-white font-semibold uppercase tracking-wide">Your Word:</p>
+                    <p className="text-lg sm:text-xl font-bold text-white tracking-wider">{currentWord}</p>
                   </div>
                 );
               })()}
@@ -268,7 +263,7 @@ function App() {
             </div>
             
             {/* Chat Section */}
-            <div className="flex flex-col md:w-1/3 h-72 sm:h-80 md:h-auto md:flex-1">
+            <div className="flex flex-col h-80 sm:h-96 md:h-auto md:flex-1">
               <div className="flex-1 flex flex-col bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg overflow-hidden shadow-xl">
                 <Chat roomId={roomCode} username={username} isDrawer={isDrawer} />
               </div>

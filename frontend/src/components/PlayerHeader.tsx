@@ -10,21 +10,21 @@ interface PlayerHeaderProps {
 }
 
 const PlayerHeader: React.FC<PlayerHeaderProps> = ({ roomCode, users, currentUsername, onLeaveRoom }) => (
-  <div className="bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg p-3 sm:p-6 mb-4 shadow-xl">
-    <div className="flex items-center justify-between flex-wrap gap-3">
-      <div className="flex-1 min-w-0">
-        <h1 className="text-lg sm:text-2xl font-bold text-[#ec4899] mb-0.5 truncate">Room: {roomCode}</h1>
-        <p className="text-[#cbd5e1] text-xs sm:text-sm">Share this code with others to join!</p>
+  <div className="bg-[#1e293b] border-2 border-[#06b6d4] rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 mb-3 shadow-xl">
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <h1 className="text-base sm:text-lg font-bold text-[#ec4899] truncate">Room: {roomCode}</h1>
+        <p className="text-[#cbd5e1] text-xs hidden sm:block">Share to invite!</p>
       </div>
       <button
         onClick={onLeaveRoom}
-        className="arcade-button bg-[#ec4899] text-white py-2 px-5 border-[#ec4899] hover:bg-[#db2777] text-sm"
+        className="arcade-button bg-[#ec4899] text-white py-1.5 px-4 border-[#ec4899] hover:bg-[#db2777] text-sm shrink-0"
       >
-        Leave Room
+        Leave
       </button>
     </div>
 
-    <div className="mt-4">
+    <div className="mt-2">
       <Leaderboard users={users} currentUsername={currentUsername} />
     </div>
   </div>
