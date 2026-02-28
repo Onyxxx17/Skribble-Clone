@@ -102,6 +102,11 @@ function App() {
       }
     });
 
+    socket.on('drawer_changed', (drawerUsername: string) => {
+      console.log('drawer_changed event received:', drawerUsername);
+      setCurrentDrawer(drawerUsername);
+    });
+
     socket.on('word_finalized', ({ word }: { word: string }) => {
       console.log('Word finalized event received:', word);
       setCurrentWord(word);

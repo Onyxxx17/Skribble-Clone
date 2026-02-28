@@ -81,6 +81,12 @@ io.on('connection', (socket) => {
         user.score += gameEngine.calculateScore(roomCode,socket.id,gameManager.getTimeElapsed(roomCode));
         io.to(roomCode).emit("score_updated", user);
         console.log(user.username + " gets " + user.score + " points");
+        
+        // Give drawer 400 points for each correct guess
+        const drawer = room.users[room.drawerIndex];
+        drawer.score += 400;
+        io.to(roomCode).emit("score_updated", drawer);
+        console.log(drawer.username + " (drawer) gets 400 points");
       }
 
       if (guess.isCorrectGuess || user.correctlyGuessed) {

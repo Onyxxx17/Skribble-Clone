@@ -142,6 +142,9 @@ export class GameManager {
       console.log(`Sending is_drawer=${user.id === newDrawer.id} to ${user.username}`);
       io.to(user.id).emit("is_drawer", user.id === newDrawer.id);
     });
+    
+    // Emit new drawer username to all users
+    io.to(roomCode).emit("drawer_changed", newDrawer.username);
   }
 
  gameOver(room: Room, io: Server) {
