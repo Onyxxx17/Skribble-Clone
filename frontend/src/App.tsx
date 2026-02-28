@@ -114,12 +114,24 @@ function App() {
 
     socket.on("game_over", () => {
       showPopupMessage("Game Over!", 'info');
+      
+      // Play game over music
+      const audio = new Audio('/game-over.wav');
+      audio.volume = 0.5;
+      audio.load();
+      audio.play()
+        .then(() => console.log('Audio playing successfully'))
+        .catch(err => console.error('Audio play failed:', err));
+      
       setGameStarted(false);
       setIsDrawer(false);
       setCurrentDrawer("");
       setCurrentWord("");
-
-      setShowGameOverScreen(true);
+      
+      // Show leaderboard after 3 seconds
+      setTimeout(() => {
+        setShowGameOverScreen(true);
+      }, 2800);
     })
 
     socket.on("all_correct_guesses" , () => {
