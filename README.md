@@ -4,7 +4,7 @@ A real-time multiplayer drawing and guessing game built with React, TypeScript, 
 
 ## � Live Demo
 
-**Play now at: [skribbl-clone.site](https://skribbl-clone.site)**
+**Play now at: [skribbl-clone.site](https://skribbl-clone.site)** (currently down since I stopped the AWS ECS task)
 
 ## �🎮 Features
 
